@@ -1,0 +1,49 @@
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div id="container">
+    <div class="container">
+        <header>
+            <h1 class="homePageHeading">Dice Games</h1>
+            <h2 class="homePageSubHeading">A simple demonstration of Video Streaming and Chat.</h2>
+        </header>
+        <hr>
+
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <h2 class="listHeading">Public games you can join</h2>
+            <!-- <table class="table table-striped" style="background-color:#ccc;">
+                <thead>
+                    <tr style="color:#000;">
+                        <th>Name</th>
+                        <th>Players</th>
+                        <th>Min Wager</th>    
+                    </tr>
+                    
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in liveTables">
+                        <td><a class="tableName" ng-click="joinTableFromList(item)">{{item.Name}}</a></td>
+                        <td class="playersCount">{{item.players.length}}</td>
+                        <td class="minWager">{{item.AnteAmount}}</td>
+                        <!-- <td>{{item.CreatedOn}}</td> --
+                    </tr>
+                </tbody>
+            </table> -->
+
+            <div class="col-md-12" ng-repeat="item in liveTables" style="color:#fff;background-color:rgba(0,0,0,0.2);;border-radius:5px;letter-spacing:3px;margin-bottom: 5px;">
+                <h5 ng-click="joinTableFromList(item)" style="margin-bottom:0;cursor:pointer;">{{item.Name}}</h5>
+                <span>Players: {{item.players.length}} | </span>
+                <span>Minimum Bet: ${{item.AnteAmount}}</span>
+            </div>
+
+        </div>
+
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <!-- <a class="btn btn-default btn-lg" ng-click="createTable()" style="margin-top:65px;">
+                Start Your Own Table
+            </a> -->
+            <a class="btn btn-default btn-lg" href="/createTable" style="margin-top:65px;">
+                Start Your Own Table
+            </a>
+        </div>
+    </div>
+</div>

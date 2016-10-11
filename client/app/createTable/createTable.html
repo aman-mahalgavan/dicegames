@@ -1,0 +1,53 @@
+<!-- Attach Navbar -->
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="container">
+	<div class="col-md-8">
+        <h2 style="color:#fff;">Start your own table</h2>
+        <form name="newTableForm" class="newTableForm">
+            <div class="form-group">
+                <label for="">Name Your Table</label>        
+                <input type="text" ng-model="tableName" placeholder="Table Name"/>
+            </div>
+    
+            <div class="form-group">
+                <label for="">Starting Wager</label>
+                <!-- <h-number value="input.num" min="2" max="100" step="1" change="onChanged()"></h-number> -->
+                <div class="minWagerSelector">
+                	<span class="wageBox wage" ng-click="wager = 1">1</span>
+                	<span class="wageBox wage" ng-click="wager = 2">2</span>
+                	<span class="wageBox wage" ng-click="wager = 3">3</span>
+                	<span class="wageBox wage" ng-click="wager = 4">4</span>
+                	<span class="wageBox wage" ng-click="wager = 5">5</span>
+                	<span class="wageBox wage" ng-click="wager = 6">6</span>
+                	<span class="wageBox wage" ng-click="wager = 7">7</span>
+                	<span class="wageBox wage" ng-click="wager = 8">8</span>
+                	<span class="wageBox wage" ng-click="wager = 9">9</span>
+                	<span class="wageBox wage" ng-click="wager = 10">10</span>
+                </div>
+                <p class="text-muted">Means players must bet at least <span class="wagerColor">${{wager}}</span> to play each round.</p>
+            </div>
+	
+			<div class="form-group">
+				<label for="">Privacy</label>
+				<div class="btn-group">
+					<button class="btn btn-default" ng-model="privacy" value="1" ng-click="privacy = 'true'">Public</button>
+					<button class="btn btn-default" ng-model="privacy" value="0" ng-click="privacy = 'false'">Private</button>	
+				</div>
+				<p class="text-muted">Public games listed. Private games only accessible with link.</p>
+			</div>
+
+			<button class="btn btn-default" ng-click="hostNewTable()">Host New Table</button>
+        </form>
+    </div>
+
+	<div class="col-md-4">
+		<h4 class="text-muted">Fix your hair! Ready to go live?</h4>
+		<div id="vid-preview"></div>
+	</div>
+
+</div>
+
+<style>
+	
+</style>

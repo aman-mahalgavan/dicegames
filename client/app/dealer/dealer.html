@@ -1,0 +1,182 @@
+<!-- Attach Navbar -->
+<div ng-include="'components/navbar/navbar.html'"></div>
+
+<div class="container" style="padding-top:30px;color:#000;">
+	
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- Text Chat Panel -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" >
+       	<h2 id="chatHeading">Chat</h2>
+    	<div id="chatWindow" style="height:400px;position:relative;overflow:none;">
+            
+            <div class="welcomeChatMsg">
+                <p>Welcome to Dice Games Chat.</p>
+            </div>
+            
+            <!-- <div id="box" style="width:100%;text-align:left;height:400px;position:relative;overflow:none;" ng-scrollbars ng-scrollbars-config="scrollbarConfig"></div> -->
+            
+            <div id="chatContainer" style="height: 320px;overflow-y: auto;" ng-scrollbars ng-scrollbars-config="scrollbarConfig">
+                <div id="box" style="display: table;max-height: 320px;width: 100%;" ></div>    
+            </div>
+            
+            
+            <input id="input" placeholder="Write Message" style="height:10%;width:78.5%;position:absolute;bottom:0;left: 0px;padding-left:20px;" />
+            
+            <button id="chatBtn" class="btn btn-default">SEND</button>
+        </div>
+    </div>
+    
+
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- Players List -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <h2 id="playerListHeading">Results</h2>
+        <div class="playersList" id="playersResults">
+            <ul>
+                <li style="width:100%;" ng-repeat="playerData in playersResults">
+                    {{playersResults}}
+                    <span class="playersImage" style="width:20%;display:inline-block;">
+                        <img style="width:50px;height:50px;" src="http://placekitten.com/g/200/300" alt="">
+                    </span>
+                    <span class="listContainer" style="width: 78%;display:inline-block;">
+                        <span class="playersName" style="display:block;">
+                            
+                            {{playerData.player.name}}
+                            
+                        </span>
+                        <span class="roundResult" style="display:block;">
+                            <span ng-repeat="dice in playerData.dice">
+                                {{dice}}
+                            </span>
+                                
+                        </span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- Video Panel -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="overflow: hidden;">
+    	<!-- <h2 id="videoHeading">Your Host</h2> -->
+        
+        <div id="dealersVideo" style="display:none;"></div>
+        <div id="vid-thumb"></div>
+
+        <form style="display:none;" id="loginForm" name="loginForm" id="login" action="#" onsubmit="return errWrap(login,this);">
+            <span class="input input--nao">
+            <input class="input__field input__field--nao" type="text" name="username" id="username" placeholder="Enter A Username"/>
+                <label class="input__label input__label--nao" for="username">
+                    <span class="input__label-content input__label-content--nao">                                          
+                    </span>
+            </label>
+            <svg class="graphic graphic--nao" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+                <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0" />
+            </svg>
+            </span>
+            <button class="cbutton cbutton--effect-radomir" type="submit" name="login_submit" value="Log In" style="margin-top: 40px; margin-left:-10px">
+                <i class="cbutton__icon fa fa-fw fa fa-sign-in"></i>
+            </button>
+        </form>
+
+        <form style="display:none;" id="callForm" name="callForm" id="call" action="#" onsubmit="return errWrap(makeCall,this);">
+            <span class="input input--nao">
+            <input class="input__field input__field--nao" type="text" name="number" id="call" placeholder="Enter User To Call!"/>
+			<label class="input__label input__label--nao" for="number">
+				<span class="input__label-content input__label-content--nao">                                          
+                </span>
+            </label>
+            <svg class="graphic graphic--nao" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+                <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0" />
+            </svg>
+            </span>
+            <button class="cbutton cbutton--effect-radomir md-trigger" type="submit" value="Call" style="margin-top: 40px; margin-left:-10px" data-modal="modal-13">
+                <i class="cbutton__icon fa fa-fw fa fa fa-phone-square"></i>
+            </button>
+        </form>
+
+        <div style="display:none;" id="inCall" class="ptext">
+            <button id="end" onclick="end()">End</button>
+            <button id="mute" onclick="mute()">Mute</button>
+            <button id="pause" onclick="pause()">Pause</button>
+        </div>
+        <!-- <div id="logs" class="ptext"></div>
+        <p class="ptext"><b>To Use:</b></p>
+        <p class="ptext">Type a username and click Log in. If input turns green you are ready to receive/place a call.</p>
+        <p class="ptext">In a separate browser window, log in with a different username, and place a call to the first.</p> -->
+    </div>
+</div>
+
+<div class="container textCenter textBold">
+	<div class="col-md-4">
+		<h4>YOUR DICE HAND</h4>
+        <!-- <button class="btn btn-default col-md-3" id="rollDice" ng-click="rollDice()">Roll Dice</button> -->
+        <div id="diceResults" class="col-md-9">
+            
+        </div>
+
+        <div class="totalDiceVal" ng-if="DiceTotalValue" style="text-align:left;">Your Score- {{DiceTotalValue}}</div>
+		<!-- <div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
+		<div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
+		<div class="col-md-3"><img src="common/images/dicetwo.png" alt=""></div>
+		<div class="col-md-3"><img src="common/images/dicefour.png" alt=""></div> -->
+	</div>
+	<!-- <div class="col-md-4">
+		<h4>YOUR CHOICE</h4>
+		<div >
+			<button class="btn btn-default" disabled>FOLD</button>
+			<button class="btn btn-default playBetBtn" disabled>PLAY $25</button>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<h4>OUTCOME</h4>
+		<span class="lostColor">
+			LOST $30
+		</span>
+	</div> -->
+</div>
+
+<div id="sampleGame">
+    <img class="dice" data-diceValue = "1" src="common/images/diceone.png" alt="">
+    <img class="dice" data-diceValue = "2" src="common/images/dicetwo.png" alt="">
+    <img class="dice" data-diceValue = "4" src="common/images/dicefour.png" alt="">
+    
+    <!-- <button class="btn btn-default" id="rollDice" ng-click="rollDice()">Roll Dice</button>
+    <div id="diceResults">
+        
+    </div> -->
+
+    <!-- <li>In the new browser tab or window, go to:  -->
+        <span class="query"><span id="gameIdQuery"></span></span>
+    <!-- </li> -->
+    
+    <section class="game">
+      <div class="col">
+        &nbsp;
+      </div>
+
+      <div class="col">
+        <!-- <div id="tictactoe" class="disabled"></div> -->
+      </div>
+
+      <div class="col">
+        <!-- Game ID:  -->
+        <strong id="gameId"></strong>
+        <br> You: <span id="you"></span>
+        <br> Round Time: <span id="time"></span>
+        <span id="whosTurn"></span>
+      </div>
+
+    </section>    
+
+</div>
+
+<style type="text/css">
+    .dice{
+        display: none;
+    }
+</style>

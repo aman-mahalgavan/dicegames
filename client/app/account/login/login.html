@@ -1,0 +1,144 @@
+<!-- <div ng-include="'components/navbar/navbar.html'"></div> -->
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <h1>Welcome To DiceGames</h1>
+      <!-- <p>Accounts are reset on server restart from <code>server/config/seed.js</code>. Default account is <code>test@test.com</code> / <code>test</code></p>
+      <p>Admin account is <code>admin@admin.com</code> / <code>admin</code></p> -->
+    </div>
+    <div class="col-sm-12">
+      <form class="form" name="form" ng-submit="login(form)" novalidate>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" class="form-control" ng-model="user.email" required>
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" class="form-control" ng-model="user.password" required>
+        </div>
+
+        <div class="form-group has-error">
+          <p class="help-block" ng-show="form.email.$error.required && form.password.$error.required && submitted">
+             Please enter your email and password.
+          </p>
+          <p class="help-block" ng-show="form.email.$error.email && submitted">
+             Please enter a valid email.
+          </p>
+
+          <p class="help-block">{{ errors.other }}</p>
+        </div>
+
+        <div>
+          <button class="btn btn-inverse btn-lg btn-login" type="submit">
+            Login
+          </button>
+          <a class="btn btn-default btn-lg btn-register" href="/signup">
+            Register
+          </a>
+        </div>
+
+        <!-- <hr> -->
+        <!-- <div>
+          <a class="btn btn-facebook" href="" ng-click="loginOauth('facebook')">
+            <i class="fa fa-facebook"></i> Connect with Facebook
+          </a>
+          <a class="btn btn-google-plus" href="" ng-click="loginOauth('google')">
+            <i class="fa fa-google-plus"></i> Connect with Google+
+          </a>
+          <a class="btn btn-twitter" href="" ng-click="loginOauth('twitter')">
+            <i class="fa fa-twitter"></i> Connect with Twitter
+          </a>
+        </div> -->
+      </form>
+    </div>
+  </div>
+  <hr>
+</div>
+ 
+
+ <!-- <div class="container">
+  <div class="headingLoginPage">
+    <h2>Welcome to Dice Games</h2>
+  </div>
+  <div class="col-xs-6 col-xs-offset-3">
+    <div class="customPanel">
+      
+      
+    
+      Login and Signup forms using bootstrap tabs
+      
+ 
+      Nav tabs
+      <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#login" aria-controls="login" role="tab" data-toggle="tab">Login</a></li>
+        <li role="presentation"><a href="#register" aria-controls="register" role="tab" data-toggle="tab">Register</a></li>
+      </ul>
+ 
+      Tab panes
+      <div class="tab-content">
+        Login Form
+        <div role="tabpanel" class="tab-pane active" id="login">
+          <form name="loginForm" class="form loginForm">
+            <div class="form-group">
+              <label class="loginFormLabels">Email</label>
+              <input ng-model="email" type="email">
+            </div>
+            <div class="form-group">
+              <label class="loginFormLabels">Password</label>
+              <input ng-model="password" type="password">
+            </div>
+            <div class="form-group" style="text-align: right;">
+              <button class="btn btn-primary" style="margin-right:86px;" ng-click="loginFormSubmit()">Login</button>  
+            </div>
+            
+          </form>
+        </div>
+        Register Form
+        <div role="tabpanel" class="tab-pane" id="register">
+          <form action="" name="registerForm" class="registerForm" style="text-align:left;">
+            <div class="form-group ">
+              <label for="">FirstName</label>
+              <input type="text" ng-model="register_firstname">
+            </div>
+            <div class="form-group">
+              <label for="">LastName</label>
+              <input type="text" ng-model="register_lastname">
+            </div>
+            <div class="form-group">
+              <label for="">Email</label>
+              <input type="email" ng-model="register_email">
+            </div>
+            <div class="form-group">
+              <label for="">Password</label>
+              <input type="password" ng-model="register_password">
+            </div>
+            <div class="form-group" style="text-align: right;">
+              <button class="btn btn-primary" style="margin-right: 40px;margin-top: -80px;" ng-click="registerFormSubmit()">Register</button> 
+            </div>
+            
+          </form>
+        </div>
+      </div>
+ 
+      
+      
+    
+    
+    </div>
+  </div>
+  
+ </div>
+ <style>
+  form label{
+    width: 100px;
+      text-align: left;
+      margin-left: 50px;
+      margin-top: 20px;
+  }
+  form input{
+    /*text-align: left;*/
+  }
+ </style>
