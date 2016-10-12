@@ -262,6 +262,7 @@ button{
 
 .navbar-right li a:after{
     content: "|" !important;
+    margin-left: 10px;
 
 }
 .navbar-right li a:last-child:after{
@@ -332,6 +333,10 @@ ul.nav-tabs{
 /* Create Table Page */
 #vid-preview > video{
     width:400px;
+}
+#vid-thumb video{
+    width:100%;
+    height:100%;
 }
 .newTableForm > .form-group{
     width: 400px;

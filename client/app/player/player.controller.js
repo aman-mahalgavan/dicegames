@@ -3,6 +3,10 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
     /* DOM Elements For Showing Video Stream */
     var video_out = document.getElementById("playersVideo");
     var vid_thumb = document.getElementById("vid-thumb");
+
+    // DOM Element To display Round Time
+    var display = document.querySelector('#time');
+
     var pubnub;
     // Get User's Details
     (function() {
@@ -39,22 +43,14 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
     /* Fetch Players list for a particular table */
     /* Checking every 1 minute if a user has joined or left the table. TODO- find a proper way to check if a user has joined or left the table.*/
-    // var getPlayersList = setInterval(function(){
-    // $http.post('/api/listPlayers', {table: $state.params.host}).success(function(response){
-    //     $scope.players = response.data.players;
-    // }).error(function(error){
-    //     console.log("Error Fetching players list");
-    //     console.log(error);
-    // })
+        // var getPlayersList = setInterval(function(){
+        // $http.post('/api/listPlayers', {table: $state.params.host}).success(function(response){
+        //     $scope.players = response.data.players;
+        // }).error(function(error){
+        //     console.log("Error Fetching players list");
+        //     console.log(error);
+        // })
     // }, 60000)
-
-
-
-    // $scope.host = $state.params.host;
-    // $scope.player = $state.params.username;
-
-    // var hostName = $state.params.host;
-    // console.log("calling " + hostName)
 
     function startPlayersVideoStream(userDetails, tableDetails) {
         var phone = window.phone = PHONE({
@@ -292,7 +288,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         var gameIdQuery = document.querySelector('#gameIdQuery');
         // var tictactoe = document.querySelector('#tictactoe');
         var output = document.querySelector('#output');
-        var whosTurn = document.getElementById('whosTurn');
+        // var whosTurn = document.getElementById('whosTurn');
 
         var gameid = '';
         var rand = (Math.random() * 9999).toFixed(0);
@@ -342,11 +338,11 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             presence: function(m) {
                 console.log('Player Controller');
                 console.log(m);
-                whosTurn
+                // whosTurn
 
                 if (m.uuid === uuid && m.action === 'join') {
                     if (m.occupancy < 2) {
-                        whosTurn.textContent = 'Waiting for your opponent...';
+                        // whosTurn.textContent = 'Waiting for your opponent...';
                     } else if (m.occupancy === 2) {
                         // mySign = 'O';
                         mySign = userDetails._id;
@@ -397,36 +393,12 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             callback: function(m) {
                 console.log("Publish Player");
                 console.log(m);
+                timer().startTimer(20, 'currentRound');
             }
         });
 
-        // function addPlayersChannelToChannelGroup(channel){
-        //     pubnub.channel_group_add_channel({
-        //         callback: function(x){console.log("Adding Channel => " + x)},
-        //         channel: channel,
-        //         channel_group: 'diceGamesChannelGroup'
-        //     })
-        // };
-
         function publishPosition(player, position, status, diceValue, chosenDices, channelName) {
-            // addPlayersChannelToChannelGroup(channelName);
-                // pubnub.publish({
-                //     channel_group: 'diceGamesChannelGroup',
-                //     channel: channelName,
-                //     message: {
-                //         player: player,
-                //         position: position,
-                //         diceValue: diceValue,
-                //         dice: chosenDices,
-                //         channel: channelName
-                //         // betOn : $scope.gameWinner
-                //     },
-                //     callback: function(m) {
-                //         // console.log("Publish Player");
-                //         // console.log(m);
-                //     }
-            // });
-            // $scope.score[player] = diceValue;
+          
             pubnub.publish({
                 channel: channelName,
                 message: {
@@ -445,8 +417,6 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     checkGameStatus(userDetails._id, diceValue);
                 }
             });
-
-            
         };
         
         // Subscribe to players own channel
@@ -459,8 +429,81 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             callback: function(m) {
                 // console.log("Publish Player");
                 // console.log(m);
+                // setTimeout(function(){
+                // document.getElementById('bet').disabled = false;
+                // timer().startTimer(10, 'nextRound');
+                // }, 100);
             }
         });
+
+        var timer = function () {
+            var seconds = 00; 
+            var tens = 00; 
+            var Interval;
+
+            function startTimer (duration, flag) {
+                if(flag == 'currentRound'){
+                    tens++; 
+                    if(seconds < duration){
+                        if (tens > 60) {
+                            console.log("seconds");
+                            seconds++;
+                            tens = 0;
+                        }
+                    }
+                    if(seconds == duration){
+                        clearInterval(Interval);
+                        display.textContent = '';
+                        if(!$scope.betOptions){
+                            document.getElementById('bet').disabled = true;
+                        }
+                    }else{
+                        display.textContent = seconds + ' Seconds Remaining';    
+                    }
+                }
+                else if(flag == 'nextRound'){
+                    tens++; 
+                    if(seconds < duration){
+                        if (tens > 60) {
+                            console.log("seconds");
+                            seconds++;
+                            tens = 0;
+                        }
+                    }
+                    if(seconds == duration){
+                        clearInterval(Interval);
+                        display.textContent = '';
+                        if(!$scope.betOptions){
+                            document.getElementById('bet').disabled = false;
+                            startNewGame();
+                        }
+                    }else{
+                        display.textContent = 'Next Round Will Start in- ' + seconds;    
+                    }
+                }
+                console.log(seconds);
+            }
+            return {
+                startTimer: function (time, flag) {
+                    time = time || 20;
+                    clearInterval(Interval);
+                    Interval = setInterval(function () {
+                        startTimer(time, flag);
+                    }, 30);
+                },
+
+                stopTimer: function () {
+                    clearInterval(Interval);
+                },
+
+                resetTimer: function () {
+                    seconds = 00; 
+                    tens = 00; 
+                    clearInterval(Interval);
+                }
+            }
+        };
+
 
         function getGameId() {
             // If the uRL comes with referral tracking queries from the URL
@@ -481,6 +524,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
         function startNewGame() {
             // document.getElementById('rollDice').removeAttribute('disabled');
+            resultContainer.innerHTML = "";
             var i;
 
             $scope.score = {
@@ -498,21 +542,21 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 squares[i].firstChild.nodeValue = EMPTY;
             }
 
-            whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
+            // whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
         }
 
         function win(score) {
-            if ($scope.score.X && $scope.score.X != 0 && $scope.score.O && $scope.score.O != 0) {
-                if ($scope.score.X > $scope.score.O) {
+            if($scope.score.X.value && $scope.score.X.value != 0 && $scope.score.O.value && $scope.score.O.value !=0 ){
+                if($scope.score.X.value > $scope.score.O.value){
                     return ' X wins';
-                } else if ($scope.score.O > $scope.score.X) {
+                }else if( $scope.score.O.value > $scope.score.X.value){
                     return 'O wins';
-                } else if($scope.score.O == $scope.score.X){
+                }else if($scope.score.O.value == $scope.score.X.value){
                     return 'X wins';
-                }else {
+                }else{
                     return false;
                 }
-            } else {
+            }else{
                 return false;
             }
 
@@ -523,7 +567,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             //     }
             // }
             // return false;
-        };
+        }
 
         function checkGameStatus(player, el) {
             moves += 1;
@@ -534,8 +578,16 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             console.log('Score for player, ' + player );
             console.log($scope.score );
 
+            if(player == userDetails._id){
+                $scope.score.O.value = el;
+            }else if(player == dealersTable.data.Dealer._id){
+                $scope.score.X.value = el;
+            }
+
             if (win($scope.score)) {
                 alert(win($scope.score));
+                document.getElementById('bet').disabled = false;
+                timer().startTimer(10, 'nextRound');
             } 
             // else if (moves > 2) {
             //     swal('Reset Game', 'error');
@@ -543,7 +595,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
             else {
                 turn = (turn === dealersTable.data.Dealer._id) ? userDetails._id : dealersTable.data.Dealer._id;
-                whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
+                // whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
             }
         }
         

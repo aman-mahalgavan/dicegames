@@ -94,6 +94,49 @@ exports.me = function(req, res, next) {
 };
 
 /**
+ * Add Money to my account
+ */
+exports.addCredit = function(req, res, next){
+  var userId = req.user._id;
+  var creditAmount = req.body.creditAmount;
+  User.findOne({_id : userId}, function(err, user){
+    if(err) return next(err);
+    user.accountBalance += creditAmount;
+    user.save().then(function(updatedUser){
+      res.json(updatedUser);
+    }); 
+  })
+}
+
+/**
+ * Update my account balance
+ */
+exports.updateAccountBalance = function(req, res, next){
+  var userId = req.user._id;
+  var betAmount = req.body.betAmount;
+  User.findOne({
+    _id: userId
+  }, '-salt -hashedPassword', function(err, user) { // don't ever give out the password or salt
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).send('Unauthorized');
+    }
+    else{
+      user.accountBalance = user.accountBalance - betAmount;
+      user.save().then(function(updatedUser){
+        res.json(updatedUser);
+      });
+      // user.update({accountBalance: newBalance}, function(err, updatedUser){
+      //   if(err) return next(err);
+      //   res.json(updatedUser);
+      // });
+    }
+  });
+}
+
+/**
  * Authentication callback
  */
 exports.authCallback = function(req, res, next) {

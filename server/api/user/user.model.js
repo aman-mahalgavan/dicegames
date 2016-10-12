@@ -12,6 +12,10 @@ var UserSchema = new Schema({
     type: String,
     default: 'user'
   },
+  accountBalance: {
+    type: Number,
+    default: 0
+  },
   hashedPassword: String,
   provider: String,
   salt: String,
