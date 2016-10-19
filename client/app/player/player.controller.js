@@ -17,7 +17,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             pubnub = PUBNUB.init({
                 publish_key: pubnubConfig.publish_key,
                 subscribe_key: pubnubConfig.subscribe_key,
-                uuid: $scope.userDetails
+                uuid: JSON.stringify($scope.userDetails),
+                ssl: pubnubConfig.ssl
             });
             
             findMyTable($scope.userDetails, tableId);
@@ -52,7 +53,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         // })
     // }, 60000)
 
-    function startPlayersVideoStream(userDetails, tableDetails) {
+    /*function startPlayersVideoStream(userDetails, tableDetails) {
         var phone = window.phone = PHONE({
             // number: $state.params.username,
             number: userDetails.name,
@@ -137,7 +138,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
             return false;
         }
-    }
+    }*/
 
 
     /* ========================================== */
@@ -237,7 +238,10 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         userDetails['playersChannel'] = 'dicegames' + (Math.floor(Math.random() * 100));
 
         $scope.rollDice = function() {
-            // document.getElementById('rollDice').setAttribute('disabled', 'disabled');
+            // Disable All playing controls after the dice has been rolled. These will get re-enabled when a new round begins
+            document.getElementById('bet').setAttribute('disabled', 'disabled');
+            document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
+            document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
             resultContainer.innerHTML = "";
             var chosenDices = [];
             for (var i = 0; i < 3; i++) {
@@ -307,7 +311,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         console.log('Channel: ' + channel);
 
         // var uuid = PUBNUB.uuid();
-        var uuid = userDetails;
+        var uuid = JSON.stringify(userDetails);
 
         // When you fork the project, please do use your own pub/sub keys.
         // http://admin.pubnub.com
@@ -384,30 +388,31 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             // channel_group: 'diceGamesChannelGroup',
             channel: dealersTable.data.Dealer._id,
             message: {
-                player: userDetails,
+                player: JSON.stringify(userDetails),
                 // diceValue: diceValue,
                 // dice: chosenDices,
-                channel: 'publishing players channel ID'
+                flag: 'publishing players channel ID'
                 // betOn : $scope.gameWinner
             },
             callback: function(m) {
                 console.log("Publish Player");
                 console.log(m);
-                timer().startTimer(20, 'currentRound');
+                // timer().startTimer(20, 'currentRound');
             }
         });
 
-        function publishPosition(player, position, status, diceValue, chosenDices, channelName) {
+        function publishPosition(player, position, status, diceValue, chosenDices, channelName, gameWinner) {
           
             pubnub.publish({
                 channel: channelName,
                 message: {
                     player: userDetails._id,
+                    playerName: userDetails.name,
                     playerData: player,
                     diceValue: diceValue,
                     dice: chosenDices,
                     channel: channelName,
-                    betOn : $scope.gameWinner,
+                    betOn : gameWinner,
                     flag: "publishing player's move"
                 },
                 callback: function(m) {
@@ -423,83 +428,199 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         pubnub.subscribe({
             channel: userDetails._id,
             presence: function(m){
-                console.log("player's own channel on which the dealer will publish a private message");
-                console.log(m);
+                // console.log("Data from Dealer on Player's Private channel - Presence");
+                // console.log(m);
+
             },
             callback: function(m) {
-                // console.log("Publish Player");
-                // console.log(m);
-                // setTimeout(function(){
-                // document.getElementById('bet').disabled = false;
-                // timer().startTimer(10, 'nextRound');
-                // }, 100);
+                if(m.data){
+                    console.log("Data from Dealer on Player's Private channel - Callback");
+                    console.log(m);
+                    
+                    var publishedTime = m.data.timestamp;
+                    var endTime = moment(publishedTime).add((m.data.duration+1), 's');
+                    var difference = moment().utc().diff(endTime, 'seconds');
+                    console.log("difference in published time and players time");
+                    console.log(difference);
+                    var timerValue = Math.abs(difference);
+                    if(m.data.flag == 'wait'){
+                        // Disable all playing controls while we are waiting for other players to join
+                        document.getElementById('bet').setAttribute('disabled', 'disabled');
+                        document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
+                        document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
+                        waitTimer(timerValue).startTimer(0);
+                    };
+                    if(m.data.flag == 'startRound'){
+                        roundTimer(timerValue).startTimer(0);
+                        // Enable all playing controls while the round is going on
+                        document.getElementById('bet').removeAttribute('disabled');
+                        document.getElementById('decreaseBet').removeAttribute('disabled');
+                        document.getElementById('increaseBet').removeAttribute('disabled');
+                    };
+
+                };
             }
         });
 
-        var timer = function () {
-            var seconds = 00; 
-            var tens = 00; 
-            var Interval;
+        // function startRound(){
+            //     $scope.roundStarted = true;
+            //     pubnub.time(function(time){ 
+                    
+            //         // Convert pubnub timeToken to IST --> var a = new Date(time/1e4);
+            //         var pubnubTime = new Date(time/1e4);
+            //         console.log("Dealer publishing the PubNub time to the player - Start Round Time");
+            //         console.log(pubnubTime);
 
-            function startTimer (duration, flag) {
-                if(flag == 'currentRound'){
-                    tens++; 
-                    if(seconds < duration){
-                        if (tens > 60) {
-                            console.log("seconds");
-                            seconds++;
-                            tens = 0;
-                        }
-                    }
-                    if(seconds == duration){
-                        clearInterval(Interval);
-                        display.textContent = '';
-                        if(!$scope.betOptions){
-                            document.getElementById('bet').disabled = true;
-                        }
-                    }else{
-                        display.textContent = seconds + ' Seconds Remaining';    
+            //         roundTimer(20).startTimer(0);
+            //         publishToPlayer($scope.playersPrivateChannel, {flag: 'startRound', duration: 20, timestamp: pubnubTime, timeString: time});
+                    
+            //     });
+            //     // startNewGame();
+        // }
+
+        // var timer = function () {
+            //     var seconds = 00; 
+            //     var tens = 00; 
+            //     var Interval;
+
+            //     function startTimer (duration, flag) {
+            //         if(flag == 'currentRound'){
+            //             tens++; 
+            //             if(seconds < duration){
+            //                 if (tens > 60) {
+            //                     console.log("seconds");
+            //                     seconds++;
+            //                     tens = 0;
+            //                 }
+            //             }
+            //             if(seconds == duration){
+            //                 clearInterval(Interval);
+            //                 display.textContent = '';
+            //                 if(!$scope.betOptions){
+            //                     document.getElementById('bet').disabled = true;
+            //                 }
+            //             }else{
+            //                 display.textContent = seconds + ' Seconds Remaining';    
+            //             }
+            //         }
+            //         else if(flag == 'nextRound'){
+            //             tens++; 
+            //             if(seconds < duration){
+            //                 if (tens > 60) {
+            //                     console.log("seconds");
+            //                     seconds++;
+            //                     tens = 0;
+            //                 }
+            //             }
+            //             if(seconds == duration){
+            //                 clearInterval(Interval);
+            //                 display.textContent = '';
+            //                 if(!$scope.betOptions){
+            //                     document.getElementById('bet').disabled = false;
+            //                     startNewGame();
+            //                 }
+            //             }else{
+            //                 display.textContent = 'Next Round Will Start in- ' + seconds;    
+            //             }
+            //         }
+            //         console.log(seconds);
+            //     }
+            //     return {
+            //         startTimer: function (time, flag) {
+            //             time = time || 20;
+            //             clearInterval(Interval);
+            //             Interval = setInterval(function () {
+            //                 startTimer(time, flag);
+            //             }, 30);
+            //         },
+
+            //         stopTimer: function () {
+            //             clearInterval(Interval);
+            //         },
+
+            //         resetTimer: function () {
+            //             seconds = 00; 
+            //             tens = 00; 
+            //             clearInterval(Interval);
+            //         }
+            //     }
+        // };
+
+        var roundTimer = function (seconds) {
+            var seconds = seconds; 
+            var tens = 00; 
+            var roundInterval;
+
+            function startCounter (duration) {
+                
+                tens++; 
+                if(seconds > duration){
+                    if (tens > 60) {
+                        seconds--;
+                        tens = 0;
                     }
                 }
-                else if(flag == 'nextRound'){
-                    tens++; 
-                    if(seconds < duration){
-                        if (tens > 60) {
-                            console.log("seconds");
-                            seconds++;
-                            tens = 0;
-                        }
-                    }
-                    if(seconds == duration){
-                        clearInterval(Interval);
-                        display.textContent = '';
-                        if(!$scope.betOptions){
-                            document.getElementById('bet').disabled = false;
-                            startNewGame();
-                        }
-                    }else{
-                        display.textContent = 'Next Round Will Start in- ' + seconds;    
-                    }
+                if(seconds == duration){
+                    clearInterval(roundInterval);
+                    display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
+                    $scope.rollDice();
+                }else{
+                    display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
+                    // Publish the Round Time to all the players playing the game
                 }
-                console.log(seconds);
+                
+
+                
+                // $scope.time.roundTime = seconds;
+                // publishToPlayer($scope.playersPrivateChannel, {time: $scope.time.roundTime, flag: 'RoundTime'});
+                console.log(seconds + ' | ' + duration);
             }
             return {
-                startTimer: function (time, flag) {
-                    time = time || 20;
-                    clearInterval(Interval);
-                    Interval = setInterval(function () {
-                        startTimer(time, flag);
+                startTimer: function (duration, flag) {
+                    var time = duration;
+                    clearInterval(roundInterval);
+                    roundInterval = setInterval(function () {
+                        startCounter(time, flag);
                     }, 30);
-                },
+                }
+            }
+        };
 
-                stopTimer: function () {
-                    clearInterval(Interval);
-                },
+        var waitTimer = function (seconds) {
+            var seconds = seconds; 
+            var tens = 00; 
+            var waitInterval;
 
-                resetTimer: function () {
-                    seconds = 00; 
-                    tens = 00; 
-                    clearInterval(Interval);
+            function startCounter (duration) {
+                
+                tens++; 
+                if(seconds > duration){
+                    if (tens > 60) {
+                        seconds--;
+                        tens = 0;
+                    }
+                }
+                if(seconds == duration){
+                    clearInterval(waitInterval);
+                    display.textContent = 'Next Round will Start in ' + seconds + ' Seconds.';
+                    
+                }else{
+                    display.textContent = 'Next Round will Start in ' + seconds + ' Seconds. Waiting for players to join';
+                    
+                }
+                
+
+                // $scope.time.waitTime = seconds;
+                // publishToPlayer($scope.playersPrivateChannel, {time: seconds, flag: 'WaitTime'});
+                console.log(seconds + ' | ' + duration);
+            }
+            return {
+                startTimer: function (duration, flag) {
+                    var time = duration;
+                    clearInterval(waitInterval);
+                    waitInterval = setInterval(function () {
+                        startCounter(time, flag);
+                    }, 30);
                 }
             }
         };
@@ -528,13 +649,15 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             var i;
 
             $scope.score = {
-                'X': {},
-                'O': {}
+                'Dealer': {},
+                'Player': {}
             };
-            $scope.score.O['name'] = userDetails._id;
-            $scope.score.O['value'] = 0;
-            $scope.score.X['name'] = dealersTable.data.Dealer._id;
-            $scope.score.X['value'] = 0;
+            $scope.score.Player['name'] = userDetails.name;
+            $scope.score.Player['id'] = userDetails._id;
+            $scope.score.Player['value'] = 0;
+            $scope.score.Dealer['name'] = dealersTable.data.Dealer.name;
+            $scope.score.Dealer['id'] = dealersTable.data.Dealer._id;
+            $scope.score.Dealer['value'] = 0;
             turn = userDetails._id;
 
             moves = 0;
@@ -546,16 +669,48 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         }
 
         function win(score) {
-            if($scope.score.X.value && $scope.score.X.value != 0 && $scope.score.O.value && $scope.score.O.value !=0 ){
-                if($scope.score.X.value > $scope.score.O.value){
-                    return ' X wins';
-                }else if( $scope.score.O.value > $scope.score.X.value){
-                    return 'O wins';
-                }else if($scope.score.O.value == $scope.score.X.value){
-                    return 'X wins';
+            /* Original Win Procedure */
+            // if($scope.score.X.value && $scope.score.X.value != 0 && $scope.score.O.value && $scope.score.O.value !=0 ){
+            //     if($scope.score.X.value > $scope.score.O.value){
+            //         return ' X wins';
+            //     }else if( $scope.score.O.value > $scope.score.X.value){
+            //         return 'O wins';
+            //     }else if($scope.score.O.value == $scope.score.X.value){
+            //         return 'X wins';
+            //     }else{
+            //         return false;
+            //     }
+            // }else{
+            //     return false;
+            // }
+
+
+            /* Test case */
+            if($scope.score.Dealer.value && $scope.score.Dealer.value != 0 && $scope.score.Player.value && $scope.score.Player.value !=0 ){
+                
+                if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value > $scope.score.Player.value){
+                    return $scope.score.Player.name + ' Wins.'; // Player Wins
+                }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value < $scope.score.Player.value){
+                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value > $scope.score.Player.value){
+                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value < $scope.score.Player.value){
+                    return $scope.score.Player.name + ' Wins.'; // Player wins
+                }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value == $scope.score.Player.value){
+                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
                 }else{
                     return false;
                 }
+
+                // if($scope.score.X.value > $scope.score.O.value){
+                //     return ' X wins';
+                // }else if( $scope.score.O.value > $scope.score.X.value){
+                //     return 'O wins';
+                // }else if($scope.score.O.value == $scope.score.X.value){
+                //     return 'X wins';
+                // }else{
+                //     return false;
+                // }
             }else{
                 return false;
             }
@@ -579,15 +734,15 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             console.log($scope.score );
 
             if(player == userDetails._id){
-                $scope.score.O.value = el;
+                $scope.score.Player.value = el;
             }else if(player == dealersTable.data.Dealer._id){
-                $scope.score.X.value = el;
+                $scope.score.Dealer.value = el;
             }
 
             if (win($scope.score)) {
                 alert(win($scope.score));
                 document.getElementById('bet').disabled = false;
-                timer().startTimer(10, 'nextRound');
+                // timer().startTimer(10, 'nextRound');
             } 
             // else if (moves > 2) {
             //     swal('Reset Game', 'error');
@@ -604,7 +759,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             if (turn !== mySign) return;
 
             // if (this.firstChild.nodeValue !== EMPTY) return;
-            publishPosition(userDetails, 'this.dataset.position', 'played', diceSum, chosenDices, userDetails._id);
+            publishPosition(userDetails, 'this.dataset.position', 'played', diceSum, chosenDices, userDetails._id,  $scope.gameWinner);
 
         }
 

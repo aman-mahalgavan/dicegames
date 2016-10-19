@@ -25,8 +25,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             var tableId = $state.params.tableId;
             findMyTable($scope.userDetails, tableId);
         }).error(function(error) {
-            console.log("Error Fetching User's Details.")
-            console.log(error);
+            // console.log("Error Fetching User's Details.")
+            // console.log(error);
         })
     })();
 
@@ -34,12 +34,12 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         $http.post('/api/tables/findTable', {tableId: tableId}).success(function(dealersTable) {
             $scope.dealerTableDetails = dealersTable;
             
-            startDealersVideoStream(userDetails, dealersTable);
-            initiateChat(userDetails, dealersTable);
+            // startDealersVideoStream(userDetails, dealersTable);
+            // initiateChat(userDetails, dealersTable);
             initiateGame(userDetails, $scope.dealerTableDetails);
         }).error(function(error) {
-            console.log("Unable to Find Dealer's Table");
-            console.log(error);
+            // console.log("Unable to Find Dealer's Table");
+            // console.log(error);
         });
     };
 
@@ -89,23 +89,23 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         //     $http.post('/api/listPlayers', {table: $state.params.tableId}).success(function(response){
         //         $scope.players = response.data.players;
         //     }).error(function(error){
-        //         console.log("Error Fetching players list");
-        //         console.log(error);
+                // console.log("Error Fetching players list");
+                // console.log(error);
         //     });
     // }, 10000);
 
 
     // // Check state change
     // $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-        //     // console.log("State Change");
+            // console.log("State Change");
         //     if (fromState.name == 'dealer') {
         //         var confirmed = confirm('You are about to leave the table. Table will be closed.');
         //         if (confirmed) {
         //             $http.post('/api/removeTable', { tableId: $scope.dealerTableDetails.data._id }).success(function(response) {
-        //                 // console.log("Table Removed");
+                        // console.log("Table Removed");
         //             }).error(function(err) {
-        //                 console.log("Error Removing the Table");
-        //                 console.log(err);
+                        // console.log("Error Removing the Table");
+                        // console.log(err);
         //             });
         //         } else {
         //             return;
@@ -150,7 +150,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
     }
 
     function addLog(log) {
-        console.log(log); 
+        // console.log(log); 
         // $('#logs').append("<p>" + log + "</p>");
     }
 
@@ -228,8 +228,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
             },
             presence: function(m) {
-                console.log("Presence ==> ");
-                console.log(m);
+                // console.log("Presence ==> ");
+                // console.log(m);
             }
         });
         pubnub.bind('keyup', input, function(e) {
@@ -244,8 +244,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         pubnub.here_now({
             channel: channel,
             callback: function(m) {
-                console.log("here now")
-                console.log(m)
+                // console.log("here now")
+                // console.log(m)
                     // m['user'] = $state.params.tableName;
                     // userName = m.user;
             }
@@ -254,6 +254,12 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
     
     function initiateGame(userDetails, dealersTable){
+        console.log("Game Logic Initiated");
+        console.log("User Details");
+        console.log(userDetails);
+        console.log("Dealers Table Details");
+        console.log(dealersTable);
+
         /* From CodePen */
 
         var diceOne = '<img data-diceValue="1" src="../../assets/images/diceone.png" style="margin-right:10px;">';
@@ -267,7 +273,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         var resultContainer = document.getElementById('diceResults');
         
         $scope.rollDice = function() {
-            // document.getElementById('rollDice').setAttribute('disabled', 'disabled');
+            document.getElementById('rollDice').setAttribute('disabled', 'disabled');
             resultContainer.innerHTML = "";
             var chosenDices = [];
             for (var i = 0; i < 3; i++) {
@@ -306,8 +312,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             // gameIdQuery.innerHTML = '<a href="' +oppenetUrl+ '" target="_blank">' +oppenetUrl+ '</a>';
 
 
-            var gameChannel = 'tictactoe--' + gameid;
-            console.log('Channel: ' + gameChannel);
+            var gameChannel = 'dicegames-' + gameid;
+            // console.log('Channel: ' + gameChannel);
 
             // var uuid = PUBNUB.uuid();
             var uuid = userDetails;
@@ -333,34 +339,40 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             // var mySign = 'X';
             var mySign = userDetails._id;
 
+            // pubnub.time(function(time){ console.log(time)})
+
             // Subscribe to a public channel where players will publish their channel names
             pubnub.subscribe({
                 channel: dealersTable.data.Dealer._id,
                 connect: play,
                 presence: function(m){
-                    console.log("Dealer's subscribed public channel presence");
-                    console.log(m);
+                    // console.log("Dealer's subscribed public channel presence");
+                    // console.log(m);
                 },
                 callback: function(m){
-                    console.log("Dealer's subscribed public channel presence");
+                    console.log("player will publish ID here");
                     console.log(m);
                      
                     m.player['playing'] = true;
+                    $scope.playerChannel = m.player._id;
                     subscribeToPlayersChannel(m.player._id);
                     collectPlayers(m);
                 }
             });
 
-             // Subscribe to player's channels
+            // Subscribe & Publish to player's channels
             function subscribeToPlayersChannel(channel){
+                console.log("Subscribe to players channel");
+                console.log(channel);
+                console.log();
                 pubnub.subscribe({
                     channel: channel,
                     presence: function(m){
-                        console.log("Dealer's subscribed public channel presence");
-                        console.log(m);
+                        // console.log("Dealer's subscribed public channel presence");
+                        // console.log(m);
                     },
                     callback: function(m){
-                        console.log("Player's published data on private channel");
+                        console.log("Dealer subscribes to player's private channel");
                         console.log(m);
                         // $scope.score[m.player] = m.diceValue;
                         $scope.score['O']['name'] = m.player;
@@ -377,20 +389,22 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                         }
                     }
                 }); 
+            };
 
-                // Privately publish to player
-                function publishToPlayer(playersChannel, message){
-                    pubnub.publish({
-                        channel: playersChannel,
-                        message: {
-                            message: message
-                        },
-                        callback: function(m) {
-                            console.log("Dealer Publishes to a single player");
-                            console.log(m);
-                        }
-                    });
-                };
+            // Privately publish to player
+            function publishToPlayer(playersChannel, data){
+                console.log("Publish To player");
+                console.log("Player's channel " + playersChannel);
+                pubnub.publish({
+                    channel: playersChannel,
+                    message: {
+                        data: data
+                    },
+                    callback: function(m) {
+                        console.log("Dealer Publishes to a player's private channel");
+                        console.log(m);
+                    }
+                });
             };
 
             // Publish to a public channel
@@ -406,8 +420,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                         channel: gameChannel
                     },
                     callback: function(m) {
-                        console.log("Publish Dealer");
-                        console.log(m);
+                        // console.log("Publish Dealer");
+                        // console.log(m);
                         // if(m.diceValue > 0){
                         //     checkGameStatus(m.player, m.diceValue);    
                         // }
@@ -417,6 +431,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             };
 
             $scope.playersInRound = [];
+            $scope.roundStarted = false;
+
             function collectPlayers(data){
                 if(!$scope.roundStarted){
                     $scope.playersInRound.push(data.player._id);
@@ -424,8 +440,9 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
                 if($scope.playersInRound.length == 1){
                     // setTimeout(function() {
-                        startRound();
-                    // }, 1000);
+                        // startRound();
+                    // }, 10000);
+                    timer(10).startTimer(0, 'wait');
                 }
             }
 
@@ -434,7 +451,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 // var twentySeconds = 20;
                 // startTimer(twentySeconds, display);
                 
-                timer().startTimer(20);
+                // timer(20).startTimer(0);
 
                 setTimeout(function(){
                     $scope.diceRolled = false;
@@ -442,162 +459,186 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             }
 
             /* Timer - 0 to Duration */
-            var timer = function () {
-                var seconds = 00; 
+                // var timer = function () {
+                //     $scope.seconds = 00; 
+                //     var tens = 00; 
+                //     var Interval;
+
+                //     function startTimer (duration) {
+                //         tens++; 
+                //         if($scope.seconds < duration){
+                //             if (tens > 60) {
+                                // console.log("seconds");
+                //                 $scope.seconds++;
+                //                 tens = 0;
+                //             }
+                //         }
+                //         if($scope.seconds == duration){
+                //             clearInterval(Interval);
+                //             display.textContent = '';
+                //             rollDiceOnce();
+                        // }else{
+
+                        //     display.textContent = $scope.seconds + ' Seconds Remaining';
+
+                        //     // Publish the Round Time to all the players playing the game
+
+                        // }
+                        
+                        // console.log($scope.seconds);
+                //     }
+                //     return {
+                //         startTimer: function (time) {
+                //             time = time || 30;
+                //             clearInterval(Interval);
+                //             Interval = setInterval(function () {
+                //                 startTimer(time);
+                //             }, 30);
+                //         },
+
+                //         stopTimer: function () {
+                //             clearInterval(Interval);
+                //         },
+
+                //         resetTimer: function () {
+                //             seconds = 00; 
+                //             tens = 00; 
+                //             clearInterval(Interval);
+                //         }
+                //     }
+                // }
+
+            /* Reverse Timer - Duration to 0 */
+            var timer = function (seconds) {
+                var seconds = seconds; 
                 var tens = 00; 
                 var Interval;
 
-                function startTimer (duration) {
+                function startTimer (duration, flag) {
+                    
                     tens++; 
-                    if(seconds < duration){
+                    if(seconds > duration){
                         if (tens > 60) {
-                            console.log("seconds");
-                            seconds++;
+                            seconds--;
                             tens = 0;
                         }
                     }
                     if(seconds == duration){
                         clearInterval(Interval);
-                        display.textContent = '';
-                        rollDiceOnce();
+                        display.textContent = seconds + ' Seconds Remaining';
+                        if(flag == 'wait'){
+                            // console.log('wait');
+
+                            timer(20).startTimer(0, 'startRound');
+                        }
+                        if(flag == 'startRound'){
+                            // console.log('startRound');
+                            rollDiceOnce();
+                        }
                     }else{
-                        display.textContent = seconds + ' Seconds Remaining';    
+                        display.textContent = seconds + ' Seconds Remaining';
+
+                        // Publish the Round Time to all the players playing the game
+                        if($scope.playerChannel){
+                            publishToPlayer($scope.playerChannel, seconds);    
+                        }
+                        
                     }
                     
-                    console.log(seconds);
+
+                    
+                    // console.log(seconds + ' | ' + duration);
                 }
                 return {
-                    startTimer: function (time) {
-                        time = time || 30;
+                    startTimer: function (duration, flag) {
+                        var time = duration;
                         clearInterval(Interval);
                         Interval = setInterval(function () {
-                            startTimer(time);
+                            startTimer(time, flag);
                         }, 30);
-                    },
-
-                    stopTimer: function () {
-                        clearInterval(Interval);
-                    },
-
-                    resetTimer: function () {
-                        seconds = 00; 
-                        tens = 00; 
-                        clearInterval(Interval);
                     }
                 }
             }
 
-            /* Reverse Timer - Duration to 0 */
-            // var timer = function () {
-            //     var seconds = 20; 
+            // function startTimer(duration, display) {
+            //     // $scope.timer = duration;
+            //     // var minutes, seconds;
+            //     // $scope.interval = setInterval(function () {
+            //     //     if (--$scope.timer < 0) {
+            //     //         return;
+            //     //         // timer = duration;
+            //     //     }else if($scope.timer == 0){
+            //     //         turn = userDetails._id;
+            //     //         rollDiceOnce();
+            //     //         clearInterval($scope.interval);
+            //     //     }
+            //     //     minutes = parseInt($scope.timer / 60, 10)
+            //     //     seconds = parseInt($scope.timer % 60, 10);
+            //     //     minutes = minutes < 10 ? "0" + minutes : minutes;
+            //     //     seconds = seconds < 10 ? "0" + seconds : seconds;
+            //     //     display.textContent = minutes + ":" + seconds;
+            //     // }, 1000);
+
+            //     var seconds = 00; 
             //     var tens = 00; 
-            //     var Interval;
+            //     var appendTens = document.getElementById("tens")
+            //     var appendSeconds = document.getElementById("seconds")
+            //     var buttonStart = document.getElementById('button-start');
+            //     var buttonStop = document.getElementById('button-stop');
+            //     var buttonReset = document.getElementById('button-reset');
+            //     var Interval ; 
+            //     setInterval(function(){
+            //         startTimer(20)
+            //     }, 10);
+            //     buttonStart.onclick = function() {
+            //         clearInterval(Interval);
+            //         Interval = setInterval(startTimer, 10);
+            //     }
+
+            //     buttonStop.onclick = function() {
+            //         clearInterval(Interval);
+            //     }
+
+
+            //     buttonReset.onclick = function() {
+            //         clearInterval(Interval);
+            //         tens = "00";
+            //         seconds = "00";
+            //         appendTens.innerHTML = tens;
+            //         appendSeconds.innerHTML = seconds;
+            //     }
 
             //     function startTimer (duration) {
             //         tens++; 
-            //         if(seconds > duration){
+            //         if(seconds < duration){
+            //             if (tens < 9) {
+            //                 appendTens.innerHTML = "0" + tens;
+            //             }
+            //             if (tens > 9) {
+            //                 appendTens.innerHTML = tens;
+            //             }
             //             if (tens > 60) {
             //                 console.log("seconds");
-            //                 seconds--;
+            //                 seconds++;
+            //                 appendSeconds.innerHTML = "0" + seconds;
             //                 tens = 0;
+            //                 appendTens.innerHTML = "0" + 0;
             //             }
-            //         }
-            //         if(seconds == duration){
-            //             clearInterval(Interval);
-            //         }
-                    
-            //         console.log(seconds);
-            //     }
-            //     return {
-            //         startTimer: function (time) {
-            //             time = time || 30;
-            //             clearInterval(Interval);
-            //             Interval = setInterval(function () {
-            //                 startTimer(time);
-            //             }, 30);
+            //             if (seconds > 9) {
+            //                 appendSeconds.innerHTML = seconds;
+            //             }
             //         }
             //     }
             // }
-
-            /*function startTimer(duration, display) {
-                // $scope.timer = duration;
-                // var minutes, seconds;
-                // $scope.interval = setInterval(function () {
-                //     if (--$scope.timer < 0) {
-                //         return;
-                //         // timer = duration;
-                //     }else if($scope.timer == 0){
-                //         turn = userDetails._id;
-                //         rollDiceOnce();
-                //         clearInterval($scope.interval);
-                //     }
-                //     minutes = parseInt($scope.timer / 60, 10)
-                //     seconds = parseInt($scope.timer % 60, 10);
-                //     minutes = minutes < 10 ? "0" + minutes : minutes;
-                //     seconds = seconds < 10 ? "0" + seconds : seconds;
-                //     display.textContent = minutes + ":" + seconds;
-                // }, 1000);
-
-                var seconds = 00; 
-                var tens = 00; 
-                var appendTens = document.getElementById("tens")
-                var appendSeconds = document.getElementById("seconds")
-                var buttonStart = document.getElementById('button-start');
-                var buttonStop = document.getElementById('button-stop');
-                var buttonReset = document.getElementById('button-reset');
-                var Interval ; 
-                setInterval(function(){
-                    startTimer(20)
-                }, 10);
-                buttonStart.onclick = function() {
-                    clearInterval(Interval);
-                    Interval = setInterval(startTimer, 10);
-                }
-
-                buttonStop.onclick = function() {
-                    clearInterval(Interval);
-                }
-
-
-                buttonReset.onclick = function() {
-                    clearInterval(Interval);
-                    tens = "00";
-                    seconds = "00";
-                    appendTens.innerHTML = tens;
-                    appendSeconds.innerHTML = seconds;
-                }
-
-                function startTimer (duration) {
-                    tens++; 
-                    if(seconds < duration){
-                        if (tens < 9) {
-                            appendTens.innerHTML = "0" + tens;
-                        }
-                        if (tens > 9) {
-                            appendTens.innerHTML = tens;
-                        }
-                        if (tens > 60) {
-                            console.log("seconds");
-                            seconds++;
-                            appendSeconds.innerHTML = "0" + seconds;
-                            tens = 0;
-                            appendTens.innerHTML = "0" + 0;
-                        }
-                        if (seconds > 9) {
-                            appendSeconds.innerHTML = seconds;
-                        }
-                    }
-                }
-            }
-*/
+            
             $scope.diceRolled = false;
             function rollDiceOnce(){
                 $scope.diceRolled = true;
                 $scope.rollDice();
 
-                setTimeout(function(){
-                    startNewGame(10, display);
-                }, 10000);
+                // setTimeout(function(){
+                //     startNewGame(10, display);
+                // }, 10000);
             }
 
             function fetchPlayersInGame(){
@@ -607,11 +648,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     includeState: true
                 },
                 function(status, response){
-                    // console.log("status");
-                    // console.log(status);
                     $scope.playersJoinedTheTable = status.uuids.map(v => JSON.parse(v));
-                    // console.log('response');
-                    // console.log(response);
                 });    
             };
 
@@ -650,16 +687,18 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 }
 
                 // whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
+                // startRound();
+                timer(10).startTimer(0, 'wait');
             }
 
             function win(score) {
                 if($scope.score.X.value && $scope.score.X.value != 0 && $scope.score.O.value && $scope.score.O.value !=0 ){
                     if($scope.score.X.value > $scope.score.O.value){
-                        return ' X wins';
+                        return $scope.score.X.name + ' wins';
                     }else if( $scope.score.O.value > $scope.score.X.value){
-                        return 'O wins';
+                        return $scope.score.O.name + ' wins';
                     }else if($scope.score.O.value == $scope.score.X.value){
-                        return 'X wins';
+                        return $scope.score.X.name + ' wins';
                     }else{
                         return false;
                     }
@@ -679,8 +718,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             function checkGameStatus(player, el) {
                 moves += 1;
                 // $scope.score[player] = el;
-                console.log('Score for player, ' + player );
-                console.log($scope.score);
+                // console.log('Score for player, ' + player );
+                // console.log($scope.score);
 
                 if(player == userDetails._id){
                     $scope.score.X.value = el;

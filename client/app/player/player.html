@@ -1,78 +1,66 @@
 <!-- Attach Navbar -->
 <div ng-include="'components/navbar/navbar.html'"></div>
-
 <div class="container" style="padding-top:30px;color:#000;">
     <!-- <button class="btn btn-primary" data-toggle="modal" data-target="#addCreditModal">Add Credit</button> -->
-	<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- Text Chat Panel -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" >
-       	<h2 id="chatHeading">Chat</h2>
-    	<div id="chatWindow" style="height:400px;position:relative;overflow:none;">
-            
+    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <h2 id="chatHeading">Chat</h2>
+        <div id="chatWindow" style="height:400px;position:relative;overflow:none;">
             <div class="welcomeChatMsg">
                 <p>Welcome to Dice Games Chat.</p>
             </div>
-            
             <!-- <div id="box" style="width:100%;text-align:left;height:400px;position:relative;overflow:none;" ng-scrollbars ng-scrollbars-config="scrollbarConfig"></div> -->
-
             <div id="chatContainer" style="height: 320px;overflow-y: auto;" ng-scrollbars ng-scrollbars-config="scrollbarConfig">
-                <div id="box" style="display: table;max-height: 320px;width: 100%;" ></div>    
+                <div id="box" style="display: table;max-height: 320px;width: 100%;"></div>
             </div>
-            
             <input id="input" placeholder="Write Message" style="height:10%;width:78.5%;position:absolute;bottom:0;left: 0px;padding-left:20px;" />
-            
             <button id="chatBtn" class="btn btn-default">SEND</button>
         </div>
     </div>
-
-	
-	<!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- Players List -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-	<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-		<h2 id="playerListHeading">Results</h2>
+    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+        <h2 id="playerListHeading">Results</h2>
         <div class="playersList">
             <ul>
                 <li ng-repeat="player in players" style="width:100%;">
-                	<span class="playersImage" style="width:20%;display:inline-block;">
-						<img style="width:50px;height:50px;" src="http://placekitten.com/g/200/300" alt="">
-					</span>
-                	<span class="listContainer" style="width: 78%;display:inline-block;">
-						<span class="playersName" style="display:block;">
-                        	{{player}}
-						</span>
-						<span class="roundResult" style="display:block;">
-							<img style="width:25px;height:25px;" src="common/images/dicefour.png" alt="">
-							<img style="width:25px;height:25px;" src="common/images/diceone.png" alt="">
-							<img style="width:25px;height:25px;" src="common/images/dicetwo.png" alt="">
-							<img style="width:25px;height:25px;" src="common/images/diceone.png" alt="">
-							<!-- <img style="width:25px;height:25px;" src="http://placekitten.com/g/200/300" alt=""> -->
-						</span>
-                	</span>
-            	</li>
+                    <span class="playersImage" style="width:20%;display:inline-block;">
+                        <img style="width:50px;height:50px;" src="http://placekitten.com/g/200/300" alt="">
+                    </span>
+                    <span class="listContainer" style="width: 78%;display:inline-block;">
+                        <span class="playersName" style="display:block;">
+                            {{player}}
+                        </span>
+                    <span class="roundResult" style="display:block;">
+                            <img style="width:25px;height:25px;" src="common/images/dicefour.png" alt="">
+                            <img style="width:25px;height:25px;" src="common/images/diceone.png" alt="">
+                            <img style="width:25px;height:25px;" src="common/images/dicetwo.png" alt="">
+                            <img style="width:25px;height:25px;" src="common/images/diceone.png" alt="">
+                            <!-- <img style="width:25px;height:25px;" src="http://placekitten.com/g/200/300" alt=""> -->
+                        </span>
+                    </span>
+                </li>
             </ul>
         </div>
     </div>
-
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- Video Panel -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="overflow: hidden;">
-    	<div class="col-md-12"  style="position:relative;padding:0;">
-    		<div class="col-md-8">
-    			<h6 id="videoHeading">YOUR HOST:</h6>
-				<h4 style="color:#fff;font-weight:bold;font-size: 20px;">{{tableName}}</h4>		
-    		</div>
-    		<div class="col-md-4" style="padding:0;position:relative;">
-    			<button class="btn btn-sm btnLeaveTable" style="position:absolute;top:0px;right:5px;">LEAVE TABLE</button>
-    		</div>
-    		
-    	</div>
-    	
-    	<div id="playersVideo"></div>
+        <div class="col-md-12" style="position:relative;padding:0;">
+            <div class="col-md-8">
+                <h6 id="videoHeading">YOUR HOST:</h6>
+                <h4 style="color:#fff;font-weight:bold;font-size: 20px;">{{tableName}}</h4>
+            </div>
+            <div class="col-md-4" style="padding:0;position:relative;">
+                <button class="btn btn-sm btnLeaveTable" style="position:absolute;top:0px;right:5px;">LEAVE TABLE</button>
+            </div>
+        </div>
+        <div id="playersVideo"></div>
         <div id="vid-thumb"></div>
-
         <form style="display:none;" id="loginForm" name="loginForm" id="login" action="#" onsubmit="return errWrap(login,this);">
             <span class="input input--nao">
             <input class="input__field input__field--nao" type="text" name="username" id="username" placeholder="Enter A Username" value="SampleUser"/>
@@ -88,12 +76,11 @@
                 <i class="cbutton__icon fa fa-fw fa fa-sign-in"></i>
             </button>
         </form>
-
         <form style="display:none;" id="callForm" name="callForm" id="call" action="#" onsubmit="return errWrap(makeCall,this);">
             <span class="input input--nao">
             <input class="input__field input__field--nao" type="text" name="number" id="call" placeholder="Enter User To Call!" value="Table1"/>
-			<label class="input__label input__label--nao" for="number">
-				<span class="input__label-content input__label-content--nao">                                          
+            <label class="input__label input__label--nao" for="number">
+                <span class="input__label-content input__label-content--nao">                                          
                 </span>
             </label>
             <svg class="graphic graphic--nao" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
@@ -104,106 +91,93 @@
                 <i class="cbutton__icon fa fa-fw fa fa fa-phone-square"></i>
             </button>
         </form>
-
         <div style="display:none;" id="inCall" class="ptext">
             <button id="end" onclick="end()">End</button>
             <button id="mute" onclick="mute()">Mute</button>
             <button id="pause" onclick="pause()">Pause</button>
         </div>
-       <!--  <div id="logs" class="ptext"></div>
+        <!--  <div id="logs" class="ptext"></div>
         <p class="ptext"><b>To Use:</b></p>
         <p class="ptext">Type a username and click Log in. If input turns green you are ready to receive/place a call.</p>
         <p class="ptext">In a separate browser window, log in with a different username, and place a call to the first.</p> -->
     </div>
 </div>
-
 <div class="container textCenter textBold">
-	<div class="col-md-4">
-		<h4>YOUR DICE HAND</h4>
+    <div class="col-md-4">
+        <h4>YOUR DICE HAND</h4>
         <!-- <button class="btn btn-default col-md-3" id="rollDice" ng-click="rollDice()">Roll Dice</button> -->
         <!-- <button class="btn btn-default col-md-3" ng-click="rollDice()">Roll Dice</button> -->
         <div id="diceResults" class="col-md-9">
-            
         </div>
-
-         <div class="totalDiceVal" ng-if="DiceTotalValue" style="text-align:left;">Your Score- {{DiceTotalValue}}</div>
-		<!-- <div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
-		<div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
-		<div class="col-md-3"><img src="common/images/dicetwo.png" alt=""></div>
-		<div class="col-md-3"><img src="common/images/dicefour.png" alt=""></div> -->
-	</div>
-	<div class="col-md-4">
-		<!-- <h4>YOUR CHOICE</h4> -->
-		
-		<!-- <button class="btn btn-default" disabled>FOLD</button> -->
-		<!-- <button class="btn btn-default playBetBtn" disabled>PLAY $25</button> -->
-        
-
+        <div class="totalDiceVal" ng-if="DiceTotalValue" style="text-align:left;">Your Score- {{DiceTotalValue}}</div>
+        <!-- <div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
+        <div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
+        <div class="col-md-3"><img src="common/images/dicetwo.png" alt=""></div>
+        <div class="col-md-3"><img src="common/images/dicefour.png" alt=""></div> -->
+    </div>
+    <div class="col-md-4">
+        <!-- <h4>YOUR CHOICE</h4> -->
+        <!-- <button class="btn btn-default" disabled>FOLD</button> -->
+        <!-- <button class="btn btn-default playBetBtn" disabled>PLAY $25</button> -->
         <div class="col-md-6" style="padding:0;">
             <div class="input-group">
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="changeBetAmt('decrease', betAmount)">-</button>
+                    <button class="btn btn-default" id="decreaseBet" type="button" ng-click="changeBetAmt('decrease', betAmount)">-</button>
                 </span>
                 <input type="number" class="form-control betAmount" ng-min="betAmount" ng-init="betAmount" ng-model="betAmount">
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="changeBetAmt('increase', betAmount)">+</button>
-                </span>    
+                    <button class="btn btn-default" id="increaseBet" type="button" ng-click="changeBetAmt('increase', betAmount)">+</button>
+                </span>
             </div>
         </div>
-
         <div class="col-md-3" style="padding:0;">
             <button id="bet" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="width:100%;">Bet</button>
         </div>
         <!-- <div class="col-md-3" style="padding:0;">
             <button class="btn btn-danger" ng-click="startNewGame()" style="width:100%;">Fold</button>
         </div> -->
-           
-		
-	</div>
-	<!-- <div class="col-md-4">
-		<h4>OUTCOME</h4>
-		<span class="lostColor">
-			LOST $30
-		</span>
-	</div> -->
+    </div>
+    <!-- <div class="col-md-4">
+        <h4>OUTCOME</h4>
+        <span class="lostColor">
+            LOST $30
+        </span>
+    </div> -->
 </div>
-
 <!-- Modal for Bet Options -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Betting Options</h4>
-      </div>
-      <div class="modal-body">
-        <form>
-        <div class="radio">
-          <label>
-            <input type="radio" name="betOptions" id="betOptions" ng-model="betOptions" value="dealer" checked>
-            Dealer
-          </label>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Betting Options</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form class="form">
+                        <div class="radio col-sm-6">
+                            <label>
+                                <input type="radio" name="betOptions" id="betOptions" ng-model="betOptions" value="dealer" checked> Dealer will win.
+                            </label>
+                        </div>
+                        <div class="radio col-sm-6">
+                            <label>
+                                <input type="radio" name="betOptions" id="betOptions" ng-model="betOptions" value="me" checked> I will win.
+                            </label>
+                        </div>
+                        <!--  <input type="radio" name="betOn" ng-model="placeBetOn" value="dealer">Dealer
+                <input type="radio" name="betOn" ng-model="placeBetOn" value="me">Me -->
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="placeBet" type="button" class="btn btn-primary" ng-disabled="!betOptions" ng-click="placeBet(betAmount, betOptions);">Place Bet</button>
+            </div>
         </div>
-
-        <div class="radio">
-          <label>
-            <input type="radio" name="betOptions" id="betOptions" ng-model="betOptions" value="me" checked>
-            Me
-          </label>
-        </div>
-           <!--  <input type="radio" name="betOn" ng-model="placeBetOn" value="dealer">Dealer
-            <input type="radio" name="betOn" ng-model="placeBetOn" value="me">Me -->
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button id="placeBet" type="button" class="btn btn-primary" ng-disabled="!betOptions" ng-click="placeBet(betAmount, betOptions);">Place Bet</button>
-      </div>
     </div>
-  </div>
 </div>
 <!-- End -->
-
 <!-- Modal for Adding Credit To User's Account -->
 <!-- <div class="modal fade" id="addCreditModal" tabindex="-1" role="dialog" aria-labelledby="addCreditLabel">
   <div class="modal-dialog" role="document">
@@ -228,45 +202,40 @@
   </div>
 </div> -->
 <!-- End -->
-
 <div id="sampleGame">
-    <img class="dice" data-diceValue = "1" src="common/images/diceone.png" alt="">
-    <img class="dice" data-diceValue = "2" src="common/images/dicetwo.png" alt="">
-    <img class="dice" data-diceValue = "4" src="common/images/dicefour.png" alt="">
-    
+    <img class="dice" data-diceValue="1" src="common/images/diceone.png" alt="">
+    <img class="dice" data-diceValue="2" src="common/images/dicetwo.png" alt="">
+    <img class="dice" data-diceValue="4" src="common/images/dicefour.png" alt="">
     <!-- <button class="btn btn-default" id="rollDice" ng-click="rollDice()">Roll Dice</button> -->
     <div id="diceResults">
-        
     </div>
-
     <!-- <li>In the new browser tab or window, go to:  -->
-        <span class="query"><span id="gameIdQuery"></span></span>
+    <span class="query"><span id="gameIdQuery"></span></span>
     <!-- </li> -->
-
     <section class="game">
-      <!-- <div class="col"> -->
+        <!-- <div class="col"> -->
         <!-- &nbsp; -->
-      <!-- </div> -->
-
-      <!-- <div class="col"> -->
+        <!-- </div> -->
+        <!-- <div class="col"> -->
         <!-- <div id="tictactoe" class="disabled"></div> -->
-      <!-- </div> -->
-
-      <div class="col">
-        <!-- Game ID:  -->
-        <strong id="gameId"></strong>
-        <br> You: <span id="you"></span>
-        <br> Round Time: <span id="time"></span>
-        <span id="whosTurn">It is your turn!</span>
-      </div>
-
+        <!-- </div> -->
+        <div class="col">
+            <!-- Game ID:  -->
+            <strong id="gameId"></strong>
+            <br> You: <span id="you"></span>
+            <br> <span id="time"></span>
+            <span id="whosTurn"></span>
+        </div>
     </section>
-
 </div>
-
-
 <style type="text/css">
-    .dice{
-        display: none;
-    }
+.dice {
+    display: none;
+}
+.radio + .radio, .checkbox + .checkbox{
+    margin:auto !important;
+}
+.input-group{
+    margin: 0;
+}
 </style>

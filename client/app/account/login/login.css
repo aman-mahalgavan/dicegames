@@ -21,3 +21,27 @@
   background-color: #fafafa;
   border-color: #ccc;
 }
+.whiteText{
+  color:#fff;
+}
+.input-group-label{
+  min-width:150px;
+}
+.input-group{
+  margin:15px 0;
+}
+.text-center{
+  text-align: center;
+}
+.help-block{
+  height:30px;
+}
+
+/* Sign Up Page */
+.social-media-links{
+  margin-top: 65px;
+  text-align: center;
+}
+.input-group .form-control:not(:first-child):not(:last-child){
+  border-radius:4px;
+}
