@@ -44,8 +44,15 @@ html, body{
     height:100% !important;
 }
 body{
-    background:url('../assets/images/backgroundstrip.png');
-    background-size:cover;
+    /*background:url('../assets/images/backgroundstrip.png');*/
+    /*background-size:cover;*/
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#1c455c+0,214d63+15,285065+28,2d4c60+41,2c3846+74,2e3744+82,373b45+100 */
+    background: #1c455c; /* Old browsers */
+    background: -moz-radial-gradient(center, ellipse cover,  #1c455c 0%, #214d63 15%, #285065 28%, #2d4c60 41%, #2c3846 74%, #2e3744 82%, #373b45 100%); /* FF3.6-15 */
+    background: -webkit-radial-gradient(center, ellipse cover,  #1c455c 0%,#214d63 15%,#285065 28%,#2d4c60 41%,#2c3846 74%,#2e3744 82%,#373b45 100%); /* Chrome10-25,Safari5.1-6 */
+    background: radial-gradient(ellipse at center,  #1c455c 0%,#214d63 15%,#285065 28%,#2d4c60 41%,#2c3846 74%,#2e3744 82%,#373b45 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1c455c', endColorstr='#373b45',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
 }
 #dealersVideo, #playersVideo{
     height: 100%;
@@ -260,14 +267,14 @@ button{
 }
 /* NAVBAR */
 
-.navbar-right li a:after{
+/*.navbar-right li:after{
     content: "|" !important;
     margin-left: 10px;
 
-}
-.navbar-right li a:last-child:after{
+}*/
+/*.navbar-right li a:last-child:after{
     content:"" !important;
-}
+}*/
 .navbar-right{
     margin-right:0 !important;
 }

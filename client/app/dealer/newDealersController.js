@@ -221,7 +221,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 	// Game Logic =>
 	
 	// Global Variables for Game. Players who join the table will get this information and then continue playing from there.
-	// Players will be allowed to play in the table is in Wait mode other wise they will have to wait for another round to start.
+	// Players will be allowed to be in the table while it is in Wait mode other wise they will have to wait for another round to start.
 	$scope.turn;
 	$scope.playersInGame = [];
 	$scope.playersInRound = [];
@@ -254,7 +254,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 		diceArray.push(diceOne, diceTwo, diceFour);
 
 		// Set up Game Requirements
-		gameid = dealersTable.data._id;
+		var gameid = dealersTable.data._id;
 		var gameChannel = 'dicegames-' + gameid;
 		var uuid = JSON.stringify(userDetails);
 		var mySign = userDetails._id;
