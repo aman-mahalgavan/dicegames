@@ -28,13 +28,187 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             $scope.dealerTableDetails = dealersTable;
             $scope.betAmount = $scope.dealerTableDetails.data.AnteAmount;
 
-            // startPlayersVideoStream(userDetails, dealersTable);
-            // initiateChat(userDetails, dealersTable);
+            startPlayersVideoStream(userDetails, dealersTable);
+            initiateChat(userDetails, dealersTable);
             initiateGame(userDetails, dealersTable);
 
         }).error(function(error) {
             console.log("Unable to Find Dealer's Table");
             console.log(error);
+        });
+    };
+
+    /* DOM Elements For Showing Video Stream */
+    var video_out = document.getElementById("playersVideo");
+    var vid_thumb = document.getElementById("vid-thumb");
+
+    // Live Video Stream
+    function startPlayersVideoStream(userDetails, tableDetails) {
+        var phone = window.phone = PHONE({
+            // number: $state.params.username,
+            number: userDetails.name,
+            publish_key: pubnubConfig.publish_key,
+            subscribe_key: pubnubConfig.subscribe_key,
+            ssl: pubnubConfig.ssl,
+            uuid: userDetails.name,
+            media: { audio: false, video: true },
+            // oneway:true
+        });
+        var ctrl = window.ctrl = CONTROLLER(phone);
+        ctrl.ready(function() {
+            // ctrl.addLocalStream(vid_thumb);
+            addLog("Logged in as SampleUser");
+        });
+
+
+        ctrl.receive(function(session) {
+            session.connected(function(session) {
+                $(video_out).html(session.video);
+                console.log(session.number + " has joined.");
+                addLog(session.number + " has joined.");
+            });
+            session.ended(function(session) {
+                // ctrl.getVideoElement(session.number).remove();
+                addLog(session.number + " has left.");
+                // vidCount--;
+            });
+        });
+        ctrl.videoToggled(function(session, isEnabled) {
+            ctrl.getVideoElement(session.number).toggle(isEnabled);
+            addLog(session.number + ": video enabled - " + isEnabled);
+        });
+        ctrl.audioToggled(function(session, isEnabled) {
+            ctrl.getVideoElement(session.number).css("opacity", isEnabled ? 1 : 0.75);
+            addLog(session.number + ": audio enabled - " + isEnabled);
+        });
+
+        if (!window.phone) alert("Login First!");
+        var num = $state.params.tableId;
+        // var num = tableDetails.data._id;
+        console.log("Dialing Table => " + num);
+        // if (phone.number() == num) return false; // No calling yourself!
+        ctrl.isOnline(num, function(isOn) {
+            // alert("checking if user is online-  " + isOn + "num- " + num);
+            if (isOn){
+                ctrl.dial(num);
+            } 
+            else {
+                alert(tableDetails.data._id + " is Offline");
+            }
+        });
+    };
+
+    $scope.mute = function() {
+        var audio = ctrl.toggleAudio();
+        if (!audio) $("#mute").html("Unmute");
+        else $("#mute").html("Mute");
+    };
+
+    $scope.end = function() {
+        ctrl.hangup();
+    };
+
+    $scope.pause = function() {
+        var video = ctrl.toggleVideo();
+        if (!video) $('#pause').html('Unpause');
+        else $('#pause').html('Pause');
+    };
+
+    function getVideo(number) {
+        return $('*[data-number="' + number + '"]');
+    };
+
+    function addLog(log) {
+        // $('#logs').append("<p>" + log + "</p>");
+    };
+
+    $scope.errWrap = function(fxn, form) {
+        try {
+            return fxn(form);
+        } catch (err) {
+            alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
+            return false;
+        }
+    };
+
+    /* ========================================== */
+    /* ================== CHAT ================== */
+    /* ========================================== */
+
+    function splitString(str) {
+        var details = {};
+
+        details['chatBadgeColor'] = str.split(':')[0],
+            details['user'] = str.split(':')[1],
+            details['message'] = str.split(':')[2]
+        return details;
+    };
+
+    // Random Color Generator
+    function getRandomColor() {
+        // creating a random number between 0 and 255
+        var r = Math.floor(Math.random() * 256);
+        var g = Math.floor(Math.random() * 256);
+        var b = Math.floor(Math.random() * 256);
+
+        // going from decimal to hex
+        var hexR = r.toString(16);
+        var hexG = g.toString(16);
+        var hexB = b.toString(16);
+
+        // making sure single character values are prepended with a "0"
+        if (hexR.length == 1) {
+            hexR = "0" + hexR;
+        }
+
+        if (hexG.length == 1) {
+            hexG = "0" + hexG;
+        }
+
+        if (hexB.length == 1) {
+            hexB = "0" + hexB;
+        }
+
+        // creating the hex value by concatenatening the string values
+        var hexColor = "#" + hexR + hexG + hexB;
+
+        return hexColor.toUpperCase();
+    };
+
+
+    function initiateChat(userDetails, tableDetails) {
+        var chatBadgeColor = getRandomColor();
+        // var box = PUBNUB.$('box'), input = PUBNUB.$('input'), channel = tableDetails.data._id;
+        var box = PUBNUB.$('box'),
+            input = PUBNUB.$('input'),
+            channel = 'dicegames';
+        pubnub.subscribe({
+            channel: channel,
+            callback: function(text) {
+                var userAttr = splitString(text);
+                if (userAttr.user != userDetails.name) {
+                    userAttr.user = '@' + userAttr.user;
+                }
+                box.innerHTML = "<div class='chatElement' style='border-left:5px solid " + userAttr.chatBadgeColor + "'><div class='username'>" + userAttr.user + "</div>" + ('' + userAttr.message).replace(/[<>]/g, '') + '</div><br>' + box.innerHTML
+                    // box.innerHTML = "<div class='chatElement'>" + (''+userDetails.message).replace( /[<>]/g, '' ) + '</div><br>' + box.innerHTML
+            }
+        });
+        pubnub.bind('keyup', input, function(e) {
+            (e.keyCode || e.charCode) === 13 && pubnub.publish({
+                channel: channel,
+                message: chatBadgeColor + ':' + userDetails.name + ':' + input.value,
+                x: (input.value = '')
+            })
+        })
+
+        pubnub.here_now({
+            channel: channel,
+            callback: function(m) {
+                console.log(m)
+                    // m['user'] = $state.params.username;
+                    // m['chatBadgeColor'] = chatBadgeColor;
+                    // hostName = m.user;
+            }
         });
     };
 
@@ -61,7 +235,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
     	var gameId = document.querySelector('#gameId');
     	var gameIdQuery = document.querySelector('#gameIdQuery');
     	var output = document.querySelector('#output');
-        var whosTurn = document.getElementById('whosTurn');
+        // var whosTurn = document.getElementById('whosTurn');
         var display = document.querySelector('#time');
 
         // dice images
@@ -85,7 +259,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
             document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
             resultContainer.innerHTML = "";
-            var chosenDices = [];
+            chosenDices = [];
             for (var i = 0; i < 3; i++) {
                 var dice = diceArray[Math.floor(Math.random() * diceArray.length)]
                 chosenDices.push(dice);
@@ -338,10 +512,10 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             $scope.score.Dealer['value'] = 0;
             
 
-            moves = 0;
-            for (i = 0; i < squares.length; i += 1) {
-                squares[i].firstChild.nodeValue = EMPTY;
-            }
+            // moves = 0;
+            // for (i = 0; i < squares.length; i += 1) {
+            //     squares[i].firstChild.nodeValue = EMPTY;
+            // }
 
             // whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
         };

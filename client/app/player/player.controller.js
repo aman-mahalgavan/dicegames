@@ -1,8 +1,8 @@
 // angular.module('dicegamesProjectApp').controller('playerController', function($scope, $rootScope, $state, $http, pubnubConfig) {
 
-//     /* DOM Elements For Showing Video Stream */
-//     var video_out = document.getElementById("playersVideo");
-//     var vid_thumb = document.getElementById("vid-thumb");
+    // /* DOM Elements For Showing Video Stream */
+    // var video_out = document.getElementById("playersVideo");
+    // var vid_thumb = document.getElementById("vid-thumb");
 
 //     // DOM Element To display Round Time
 //     var display = document.querySelector('#time');

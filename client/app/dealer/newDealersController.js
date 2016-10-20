@@ -29,8 +29,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         $http.post('/api/tables/findTable', {tableId: tableId}).success(function(dealersTable) {
            	
            	$scope.dealerTableDetails = dealersTable;
-            // startDealersVideoStream(userDetails, dealersTable);
-            // initiateChat(userDetails, dealersTable);
+            startDealersVideoStream(userDetails, dealersTable);
+            initiateChat(userDetails, dealersTable);
             initiateGame(userDetails, $scope.dealerTableDetails);
 
         }).error(function(error) {
@@ -39,8 +39,31 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         });
     };
 
+    // Delete table when the dealer leaves the table
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            console.log("State Change");
+            if (fromState.name == 'dealer') {
+                var confirmed = confirm('You are about to leave the table. Table will be closed.');
+                if (confirmed) {
+                    $http.post('/api/removeTable', { tableId: $scope.dealerTableDetails.data._id }).success(function(response) {
+                        console.log("Table Removed");
+                    }).error(function(err) {
+                        console.log("Error Removing the Table");
+                        console.log(err);
+                    });
+                } else {
+                    return;
+                };
+            };
+
+    });
+
+    /* DOM Elements for Showing the Video */
+    var video_out = document.getElementById("dealersVideo");
+    var vid_thumb = document.getElementById("vid-thumb");
+
 	// TODO: Video Broadcast Logic
-	/*function startDealersVideoStream(userDetails, tableDetails) {
+	function startDealersVideoStream(userDetails, tableDetails) {
         $scope.phone = window.phone = PHONE({
             number: $state.params.tableId,
             publish_key: pubnubConfig.publish_key,
@@ -127,7 +150,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
             return false;
         }
-    }*/
+    }
 
     /* ========================================== */
     /* ================== CHAT ================== */
@@ -242,7 +265,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 		var gameId = document.querySelector('#gameId');
 		var gameIdQuery = document.querySelector('#gameIdQuery');
 		var output = document.querySelector('#output');
-		var whosTurn = document.getElementById('whosTurn');
+		// var whosTurn = document.getElementById('whosTurn');
 		var display = document.querySelector('#time');
 
 		// dice images
@@ -557,15 +580,15 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 // }else{
                 //     return false;
                 // }
-                if($scope.gameWinner == $scope.score.Dealer.name && $scope.score.Dealer.value > $scope.score.Player.value){
+                if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value > $scope.score.Player.value){
                     return $scope.score.Player.name + ' Wins.'; // Player Wins
-                }else if($scope.gameWinner == $scope.score.Dealer.name && $scope.score.Dealer.value < $scope.score.Player.value){
+                }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value < $scope.score.Player.value){
                     return $scope.score.Dealer.name + ' Wins.'; // Player loses
-                }else if($scope.gameWinner == $scope.score.Player.name && $scope.score.Dealer.value > $scope.score.Player.value){
+                }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value > $scope.score.Player.value){
                     return $scope.score.Dealer.name + ' Wins.'; // Player loses
-                }else if($scope.gameWinner == $scope.score.Player.name && $scope.score.Dealer.value < $scope.score.Player.value){
+                }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value < $scope.score.Player.value){
                     return $scope.score.Player.name + ' Wins.'; // Player wins
-                }else if($scope.gameWinner == $scope.score.Player.name && $scope.score.Dealer.value == $scope.score.Player.value){
+                }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value == $scope.score.Player.value){
                     return $scope.score.Dealer.name + ' Wins.'; // Player loses
                 }else{
                     return false;
@@ -587,7 +610,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
             if (win($scope.score)) {
                 alert(win($scope.score));
-                startNewGame();
+                // startNewGame();
                 pubnub.time(function(time){ 
 
 	            	// Convert pubnub timeToken to IST --> 
