@@ -49,6 +49,39 @@
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- Video Panel -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+
+
+
+    <!-- Experiment -->
+    <!-- <section class="experiment"> -->
+           <!--  <section>
+                <span>
+                    Private ??
+                    <a href="" target="_blank" title="Open this link in new tab. Then your room will be private!">
+                        <code>
+                            <strong id="unique-token">#123456789</strong>
+                        </code>
+                    </a>
+                </span>
+
+                <input type="text" id="broadcast-name">
+                <button id="setup-new-broadcast" class="setup">Setup New Broadcast</button>
+            </section> -->
+
+            <!-- list of all available broadcasting rooms -->
+            <!-- <table style="width: 100%;" id="rooms-list"></table> -->
+
+
+            <!-- local/remote videos container -->
+            <!-- <div id="videos-container"></div> -->
+        <!-- </section> -->
+    <!-- End -->
+
+
+
+
+
+
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="overflow: hidden;">
         <div class="col-md-12" style="position:relative;padding:0;">
             <div class="col-md-8">
@@ -59,7 +92,8 @@
                 <button class="btn btn-sm btnLeaveTable" style="position:absolute;top:0px;right:5px;">LEAVE TABLE</button>
             </div>
         </div>
-        <div id="playersVideo"></div>
+        <div id="videos-container"></div>
+       <!--  <div id="playersVideo"></div>
         <div id="vid-thumb"></div>
         <form style="display:none;" id="loginForm" name="loginForm" id="login" action="#" onsubmit="return errWrap(login,this);">
             <span class="input input--nao">
@@ -95,7 +129,7 @@
             <button id="end" onclick="end()">End</button>
             <button id="mute" onclick="mute()">Mute</button>
             <button id="pause" onclick="pause()">Pause</button>
-        </div>
+        </div> -->
         <!--  <div id="logs" class="ptext"></div>
         <p class="ptext"><b>To Use:</b></p>
         <p class="ptext">Type a username and click Log in. If input turns green you are ready to receive/place a call.</p>
@@ -233,5 +267,14 @@
 }
 .input-group{
     margin: 0;
+}
+audio,video {
+    -moz-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+    transition: all 1s ease;
+    vertical-align: top;
+    width: 100%;
 }
 </style>

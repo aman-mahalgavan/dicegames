@@ -28,7 +28,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             $scope.dealerTableDetails = dealersTable;
             $scope.betAmount = $scope.dealerTableDetails.data.AnteAmount;
 
-            startPlayersVideoStream(userDetails, dealersTable);
+            // startPlayersVideoStream(userDetails, dealersTable);
+            broadcastVideo(userDetails, dealersTable);
             initiateChat(userDetails, dealersTable);
             initiateGame(userDetails, dealersTable);
 
@@ -43,60 +44,183 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
     var vid_thumb = document.getElementById("vid-thumb");
 
     // Live Video Stream
-    function startPlayersVideoStream(userDetails, tableDetails) {
-        var phone = window.phone = PHONE({
-            // number: $state.params.username,
-            number: userDetails.name,
-            publish_key: pubnubConfig.publish_key,
-            subscribe_key: pubnubConfig.subscribe_key,
-            ssl: pubnubConfig.ssl,
-            uuid: userDetails.name,
-            media: { audio: false, video: true },
-            // oneway:true
-        });
-        var ctrl = window.ctrl = CONTROLLER(phone);
-        ctrl.ready(function() {
-            // ctrl.addLocalStream(vid_thumb);
-            addLog("Logged in as SampleUser");
-        });
+    // function startPlayersVideoStream(userDetails, tableDetails) {
+    //     var phone = window.phone = PHONE({
+    //         // number: $state.params.username,
+    //         number: userDetails.name,
+    //         publish_key: pubnubConfig.publish_key,
+    //         subscribe_key: pubnubConfig.subscribe_key,
+    //         ssl: pubnubConfig.ssl,
+    //         uuid: userDetails.name,
+    //         media: { audio: false, video: true },
+    //         // oneway:true
+    //     });
+    //     var ctrl = window.ctrl = CONTROLLER(phone);
+    //     ctrl.ready(function() {
+    //         // ctrl.addLocalStream(vid_thumb);
+    //         addLog("Logged in as SampleUser");
+    //     });
 
 
-        ctrl.receive(function(session) {
-            session.connected(function(session) {
-                $(video_out).html(session.video);
-                console.log(session.number + " has joined.");
-                addLog(session.number + " has joined.");
-            });
-            session.ended(function(session) {
-                // ctrl.getVideoElement(session.number).remove();
-                addLog(session.number + " has left.");
-                // vidCount--;
-            });
-        });
-        ctrl.videoToggled(function(session, isEnabled) {
-            ctrl.getVideoElement(session.number).toggle(isEnabled);
-            addLog(session.number + ": video enabled - " + isEnabled);
-        });
-        ctrl.audioToggled(function(session, isEnabled) {
-            ctrl.getVideoElement(session.number).css("opacity", isEnabled ? 1 : 0.75);
-            addLog(session.number + ": audio enabled - " + isEnabled);
-        });
+    //     ctrl.receive(function(session) {
+    //         session.connected(function(session) {
+    //             $(video_out).html(session.video);
+    //             console.log(session.number + " has joined.");
+    //             addLog(session.number + " has joined.");
+    //         });
+    //         session.ended(function(session) {
+    //             // ctrl.getVideoElement(session.number).remove();
+    //             addLog(session.number + " has left.");
+    //             // vidCount--;
+    //         });
+    //     });
+    //     ctrl.videoToggled(function(session, isEnabled) {
+    //         ctrl.getVideoElement(session.number).toggle(isEnabled);
+    //         addLog(session.number + ": video enabled - " + isEnabled);
+    //     });
+    //     ctrl.audioToggled(function(session, isEnabled) {
+    //         ctrl.getVideoElement(session.number).css("opacity", isEnabled ? 1 : 0.75);
+    //         addLog(session.number + ": audio enabled - " + isEnabled);
+    //     });
 
-        if (!window.phone) alert("Login First!");
-        var num = $state.params.tableId;
-        // var num = tableDetails.data._id;
-        console.log("Dialing Table => " + num);
-        // if (phone.number() == num) return false; // No calling yourself!
-        ctrl.isOnline(num, function(isOn) {
-            // alert("checking if user is online-  " + isOn + "num- " + num);
-            if (isOn){
-                ctrl.dial(num);
-            } 
-            else {
-                alert(tableDetails.data._id + " is Offline");
+    //     if (!window.phone) alert("Login First!");
+    //     var num = $state.params.tableId;
+    //     // var num = tableDetails.data._id;
+    //     console.log("Dialing Table => " + num);
+    //     // if (phone.number() == num) return false; // No calling yourself!
+    //     ctrl.isOnline(num, function(isOn) {
+    //         // alert("checking if user is online-  " + isOn + "num- " + num);
+    //         if (isOn){
+    //             ctrl.dial(num);
+    //         } 
+    //         else {
+    //             alert(tableDetails.data._id + " is Offline");
+    //         }
+    //     });
+    // };
+    function broadcastVideo(userDetails, tableDetails){
+        // Muaz Khan     - https://github.com/muaz-khan
+        // MIT License   - https://www.webrtc-experiment.com/licence/
+        // Documentation - https://github.com/muaz-khan/RTCMultiConnection
+
+        var connection = new RTCMultiConnection();
+        connection.session = {
+            audio: true,
+            video: true,
+            oneway: true
+        };
+
+        // connection.channel = 'testVideoBroadcast';
+        connection.channel = $state.params.tableId;
+
+        connection.onstream = function(e) {
+            e.mediaElement.width = '100%';
+            videosContainer.insertBefore(e.mediaElement, videosContainer.firstChild);
+            // rotateVideo(e.mediaElement);
+            scaleVideos();
+        };
+
+        // function rotateVideo(mediaElement) {
+        //     mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(0deg)';
+        //     setTimeout(function() {
+        //         mediaElement.style[navigator.mozGetUserMedia ? 'transform' : '-webkit-transform'] = 'rotate(360deg)';
+        //     }, 1000);
+        // }
+
+        connection.onstreamended = function(e) {
+            e.mediaElement.style.opacity = 0;
+            // rotateVideo(e.mediaElement);
+            setTimeout(function() {
+                if (e.mediaElement.parentNode) {
+                    e.mediaElement.parentNode.removeChild(e.mediaElement);
+                }
+                scaleVideos();
+            }, 1000);
+        };
+
+        var sessions = {};
+        connection.onNewSession = function(session) {
+            if (sessions[session.sessionid]) return;
+            sessions[session.sessionid] = session;
+
+            // var tr = document.createElement('tr');
+            // tr.innerHTML = '<td><strong>' + session.sessionid + '</strong> is sharing his webcam in one-way direction!</td>' +
+            //     '<td><button class="join">View His Webcam</button></td>';
+            // roomsList.insertBefore(tr, roomsList.firstChild);
+
+            // var joinRoomButton = tr.querySelector('.join');
+            // joinRoomButton.setAttribute('data-sessionid', session.sessionid);
+            // joinRoomButton.onclick = function() {
+            //     this.disabled = true;
+
+            //     var sessionid = this.getAttribute('data-sessionid');
+            //     // session = sessions[sessionid];
+            //     session = sessions[tableDetails.data.Dealer._id];
+
+            //     if (!session) throw 'No such session exists.';
+
+            //     connection.join(session);
+            // };
+
+            session = sessions[tableDetails.data.Dealer._id];
+
+            if (!session) throw 'No such session exists.';
+
+            connection.join(session);
+        };
+
+        var videosContainer = document.getElementById('videos-container');
+        var roomsList = document.getElementById('rooms-list');
+
+        // document.getElementById('setup-new-broadcast').onclick = function() {
+        //     this.disabled = true;
+
+        //     connection.open(document.getElementById('broadcast-name').value || 'Anonymous');
+        // };
+
+        // setup signaling to search existing sessions
+        connection.connect();
+
+        // (function() {
+        //     var uniqueToken = document.getElementById('unique-token');
+        //     if (uniqueToken)
+        //         if (location.hash.length > 2) uniqueToken.parentNode.parentNode.parentNode.innerHTML = '<h2 style="text-align:center;"><a href="' + location.href + '" target="_blank">Share this link</a></h2>';
+        //         else uniqueToken.innerHTML = uniqueToken.parentNode.parentNode.href = '#' + (Math.random() * new Date().getTime()).toString(36).toUpperCase().replace(/\./g, '-');
+        // })();
+
+        function scaleVideos() {
+            var videos = document.querySelectorAll('video'),
+                length = videos.length,
+                video;
+
+            var minus = 130;
+            var windowHeight = 700;
+            var windowWidth = 600;
+            var windowAspectRatio = windowWidth / windowHeight;
+            var videoAspectRatio = 4 / 3;
+            var blockAspectRatio;
+            var tempVideoWidth = 0;
+            var maxVideoWidth = 0;
+
+            for (var i = length; i > 0; i--) {
+                blockAspectRatio = i * videoAspectRatio / Math.ceil(length / i);
+                if (blockAspectRatio <= windowAspectRatio) {
+                    tempVideoWidth = videoAspectRatio * windowHeight / Math.ceil(length / i);
+                } else {
+                    tempVideoWidth = windowWidth / i;
+                }
+                if (tempVideoWidth > maxVideoWidth)
+                    maxVideoWidth = tempVideoWidth;
             }
-        });
-    };
+            for (var i = 0; i < length; i++) {
+                video = videos[i];
+                if (video)
+                    video.width = maxVideoWidth - minus;
+            }
+        };
+
+        window.onresize = scaleVideos;
+    }
 
     $scope.mute = function() {
         var audio = ctrl.toggleAudio();
@@ -252,6 +376,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 		var uuid = JSON.stringify(userDetails);
 		var mySign = userDetails._id;
 
+		$scope.resultingDice = [];
 		// Roll Player's Dice
 		$scope.rollDice = function() {
             // Disable All playing controls after the dice has been rolled. These will get re-enabled when a new round begins
@@ -263,7 +388,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             for (var i = 0; i < 3; i++) {
                 var dice = diceArray[Math.floor(Math.random() * diceArray.length)]
                 chosenDices.push(dice);
-                resultContainer.innerHTML += dice;
+                $scope.resultingDice = angular.copy(chosenDices);
+                // resultContainer.innerHTML += dice;
             };
 
             var arr = document.getElementById('diceResults').children;
@@ -282,7 +408,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             if (betOn == 'me') {
                 $scope.gameWinner = $scope.userDetails._id;
             } else if (betOn == 'dealer') {
-                $scope.gameWinner = $scope.dealerTableDetails.data.dealer;
+                $scope.gameWinner = $scope.dealerTableDetails.data.Dealer._id;
             }
             $('#myModal').modal('hide');
             $scope.rollDice();
@@ -430,6 +556,11 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     clearInterval(roundInterval);
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
                     $scope.rollDice();
+                    if($scope.resultingDice.length == 3){
+                    	$scope.resultingDice.forEach(function(dice){
+                    		resultContainer.innerHTML += dice;
+                    	});
+                    };
                 }else{
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
                     // Publish the Round Time to all the players playing the game
@@ -494,6 +625,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         function startNewGame() {
             // document.getElementById('rollDice').removeAttribute('disabled');
             resultContainer.innerHTML = "";
+            $scope.resultingDice = [];
             var i;
             $scope.turn = userDetails._id;
 
@@ -557,6 +689,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             if (win($scope.score)) {
                 alert(win($scope.score));
                 document.getElementById('bet').disabled = false;
+                // Reset scores when a round is over and somebody has won the round
+                startNewGame();
             } 
             // else if (moves > 2) {
             //     swal('Reset Game', 'error');
