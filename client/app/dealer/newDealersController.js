@@ -46,7 +46,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             if (fromState.name == 'dealer') {
                 var confirmed = confirm('You are about to leave the table. Table will be closed.');
                 if (confirmed) {
-                    $http.post('/api/removeTable', { tableId: $scope.dealerTableDetails.data._id }).success(function(response) {
+                    $http.post('/api/tables/removeTable', { tableId: $scope.dealerTableDetails.data._id }).success(function(response) {
                         console.log("Table Removed");
                     }).error(function(err) {
                         console.log("Error Removing the Table");
@@ -223,53 +223,53 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
     }
 
      // // Call Options
-    function makeCall(form) {
-        if (!window.phone) alert("Login First!");
-        var num = form.number.value;
-        if ($scope.phone.number() == num) return false; // No calling yourself!
-        $scope.ctrl.isOnline(num, function(isOn) {
-            if (isOn) {
-                $scope.ctrl.dial(num);
-            } else {
-                alert("User is Offline");
-            }
-        });
-        return false;
-    }
+    // function makeCall(form) {
+    //     if (!window.phone) alert("Login First!");
+    //     var num = form.number.value;
+    //     if ($scope.phone.number() == num) return false; // No calling yourself!
+    //     $scope.ctrl.isOnline(num, function(isOn) {
+    //         if (isOn) {
+    //             $scope.ctrl.dial(num);
+    //         } else {
+    //             alert("User is Offline");
+    //         }
+    //     });
+    //     return false;
+    // }
 
-    $scope.mute = function() {
-        var audio = $scope.ctrl.toggleAudio();
-        if (!audio) $("#mute").html("Unmute");
-        else $("#mute").html("Mute");
-    }
+    // $scope.mute = function() {
+    //     var audio = $scope.ctrl.toggleAudio();
+    //     if (!audio) $("#mute").html("Unmute");
+    //     else $("#mute").html("Mute");
+    // }
 
-    $scope.end = function() {
-        $scope.ctrl.hangup();
-    }
+    // $scope.end = function() {
+    //     $scope.ctrl.hangup();
+    // }
 
-    $scope.pause = function() {
-        var video = $scope.ctrl.toggleVideo();
-        if (!video) $('#pause').html('Unpause');
-        else $('#pause').html('Pause');
-    }
+    // $scope.pause = function() {
+    //     var video = $scope.ctrl.toggleVideo();
+    //     if (!video) $('#pause').html('Unpause');
+    //     else $('#pause').html('Pause');
+    // }
 
-    function getVideo(number) {
-        return $('*[data-number="' + number + '"]');
-    }
+    // function getVideo(number) {
+    //     return $('*[data-number="' + number + '"]');
+    // }
 
-    function addLog(log) {
-        // console.log(log); 
-        // $('#logs').append("<p>" + log + "</p>");
-    }
+    // function addLog(log) {
+    //     // console.log(log); 
+    //     // $('#logs').append("<p>" + log + "</p>");
+    // }
 
-    $scope.errWrap = function(fxn, form) {
-        try {
-            return fxn(form);
-        } catch (err) {
-            alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
-            return false;
-        }
-    }
+    // $scope.errWrap = function(fxn, form) {
+    //     try {
+    //         return fxn(form);
+    //     } catch (err) {
+    //         alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
+    //         return false;
+    //     }
+    // }
 
     /* ========================================== */
     /* ================== CHAT ================== */

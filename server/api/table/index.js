@@ -11,6 +11,7 @@ router.post('/findTable',auth.isAuthenticated(), controller.index);
 router.post('/createTable',auth.isAuthenticated(), controller.create);
 router.get('/listPublicTables', controller.listPublicTables);
 router.post('/joinTable', controller.joinTable);
+router.post('/removeTable', controller.removeTable);
 // router.post('/listPrivateTables', controller.listPrivateTables);
 
 // router.get('/', auth.hasRole('admin'), controller.index);

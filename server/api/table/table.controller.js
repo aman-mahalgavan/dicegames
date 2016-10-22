@@ -140,6 +140,17 @@ exports.destroy = function(req, res) {
   });
 };
 
+exports.removeTable = function(req, res){
+	var tableId = req.body.tableID;
+	Table.remove({_id: tableId}, function(err, result){
+		if(err){
+			res.json({flag:0, msg:"Error Deleting Requested Table", data:err});
+		}else{
+			res.json({flag:1, msg:"Requested Table Removed", data:result});
+		}
+	})
+};
+
 /**
  * Authentication callback
  */

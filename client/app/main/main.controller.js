@@ -32,7 +32,7 @@ angular.module('dicegamesProjectApp')
     $scope.liveTables = [];
 
     // Fetch List of Tables
-    // setInterval(function(){
+    setInterval(function(){
       $http.get('/api/tables/listPublicTables').success(function(response){
         /*if(response.data.length > 0){
           response.data.forEach(function(item){
@@ -46,7 +46,7 @@ angular.module('dicegamesProjectApp')
         console.log("Error Fetching List of Dealer's Tables");
         console.log(err);
       }); 
-    // }, 3000);
+    }, 30000);
     
 
     function TrimString(x) {
