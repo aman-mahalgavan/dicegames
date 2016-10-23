@@ -222,38 +222,38 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         window.onresize = scaleVideos;
     }
 
-    $scope.mute = function() {
-        var audio = ctrl.toggleAudio();
-        if (!audio) $("#mute").html("Unmute");
-        else $("#mute").html("Mute");
-    };
+    // $scope.mute = function() {
+    //     var audio = ctrl.toggleAudio();
+    //     if (!audio) $("#mute").html("Unmute");
+    //     else $("#mute").html("Mute");
+    // };
 
-    $scope.end = function() {
-        ctrl.hangup();
-    };
+    // $scope.end = function() {
+    //     ctrl.hangup();
+    // };
 
-    $scope.pause = function() {
-        var video = ctrl.toggleVideo();
-        if (!video) $('#pause').html('Unpause');
-        else $('#pause').html('Pause');
-    };
+    // $scope.pause = function() {
+    //     var video = ctrl.toggleVideo();
+    //     if (!video) $('#pause').html('Unpause');
+    //     else $('#pause').html('Pause');
+    // };
 
-    function getVideo(number) {
-        return $('*[data-number="' + number + '"]');
-    };
+    // function getVideo(number) {
+    //     return $('*[data-number="' + number + '"]');
+    // };
 
-    function addLog(log) {
-        // $('#logs').append("<p>" + log + "</p>");
-    };
+    // function addLog(log) {
+    //     // $('#logs').append("<p>" + log + "</p>");
+    // };
 
-    $scope.errWrap = function(fxn, form) {
-        try {
-            return fxn(form);
-        } catch (err) {
-            alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
-            return false;
-        }
-    };
+    // $scope.errWrap = function(fxn, form) {
+    //     try {
+    //         return fxn(form);
+    //     } catch (err) {
+    //         alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
+    //         return false;
+    //     }
+    // };
 
     /* ========================================== */
     /* ================== CHAT ================== */
@@ -375,6 +375,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 		var channel = 'dicegames-' + gameid;
 		var uuid = JSON.stringify(userDetails);
 		var mySign = userDetails._id;
+        var chosenDices = [];
 
 		$scope.resultingDice = [];
 		// Roll Player's Dice
@@ -391,12 +392,15 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 $scope.resultingDice = angular.copy(chosenDices);
                 // resultContainer.innerHTML += dice;
             };
-
-            var arr = document.getElementById('diceResults').children;
             var diceSum = 0;
-            for (var j = 0; j < arr.length; j++) {
-                diceSum += Number(arr[j].getAttribute('data-diceValue'));
-            }
+
+            // var arr = document.getElementById('diceResults').children;
+            // for (var j = 0; j < arr.length; j++) {
+            //     diceSum += Number(arr[j].getAttribute('data-diceValue'));
+            // }
+            chosenDices.forEach(function(item){
+                diceSum += Number(item.substr(21, 1));
+            });
             $scope.DiceTotalValue = diceSum;
 
             set(diceSum, chosenDices);
@@ -480,8 +484,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             pubnub.publish({
                 channel: channelName,
                 message: {
-                    player: userDetails._id,
-                    playerName: userDetails.name,
+                    player: player._id._id,
+                    playerName: player.name,
                     playerData: player,
                     diceValue: diceValue,
                     dice: chosenDices,

@@ -46,7 +46,7 @@ angular.module('dicegamesProjectApp')
         console.log("Error Fetching List of Dealer's Tables");
         console.log(err);
       }); 
-    }, 30000);
+    }, 3000);
     
 
     function TrimString(x) {

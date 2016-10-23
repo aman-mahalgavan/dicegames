@@ -121,6 +121,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
         connection.onstream = function(e) {
             e.mediaElement.width = '100%';
+            e.mediaElement.style.transform = 'rotateY(180deg)';
             videosContainer.insertBefore(e.mediaElement, videosContainer.firstChild);
             // rotateVideo(e.mediaElement);
             scaleVideos();
@@ -455,22 +456,20 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 callback: function(m){
                     console.log("Dealer's subscribes to player's channel - callback");
                     console.log(m);
-                    // $scope.score[m.player] = m.diceValue;
-                    $scope.score.Player['id'] = m.player;
-                    $scope.score.Player['name'] = m.playerName;
-                    $scope.score.Player['value'] = m.diceValue;
-                    $scope.gameWinner = m.betOn;
-                    // publishToPlayer(channel, "");
+                    if(m.player && m.playerName && m.diceValue && m.betOn){
+                        $scope.score.Player['id'] = m.player;
+                        $scope.score.Player['name'] = m.playerName;
+                        $scope.score.Player['value'] = m.diceValue;    
+                        $scope.gameWinner = m.betOn;
+                    };
 
-                    // $scope.score[dealersTable.data.Dealer._id] = 0;
-
-                    checkGameStatus(m.player, m.diceValue);
-                    if($scope.timer && $scope.timer > 0 ){
+                    if($scope.waitTimer && $scope.waitTimer > 0 ){
                         $scope.playersResults.push(m);
-                    }else if($scope.timer && $scope.timer <= 0 ){
-                        $scope.timer = 20;
+                    }else if($scope.waitTimer && $scope.waitTimer <= 0 ){
+                        // $scope.timer = 20;
                         publishToPlayer(channel, "Please Wait for this round to finish!");
                     }
+                    checkGameStatus(m.player, m.diceValue);
                 }
             }); 
         };
@@ -598,6 +597,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     }
                 }
                 if(seconds == duration){
+                    $scope.roundTimer = seconds;
                     clearInterval(roundInterval);
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
                     rollDiceOnce();
@@ -623,7 +623,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 }
             }
         };
-
+        
         var waitTimer = function (seconds) {
             var seconds = seconds; 
             var tens = 00; 
@@ -639,6 +639,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     }
                 }
                 if(seconds == duration){
+                    $scope.waitTimer = seconds;
                     clearInterval(waitInterval);
                     display.textContent = 'Next Round will Start in ' + seconds + ' Seconds.';
                     startRound();

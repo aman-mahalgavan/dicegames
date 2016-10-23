@@ -141,7 +141,9 @@ exports.destroy = function(req, res) {
 };
 
 exports.removeTable = function(req, res){
-	var tableId = req.body.tableID;
+	var tableId = req.body.tableId;
+	console.log("tableId to be removed");
+	console.log(tableId);
 	Table.remove({_id: tableId}, function(err, result){
 		if(err){
 			res.json({flag:0, msg:"Error Deleting Requested Table", data:err});
