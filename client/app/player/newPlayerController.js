@@ -392,18 +392,20 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 $scope.resultingDice = angular.copy(chosenDices);
                 // resultContainer.innerHTML += dice;
             };
-            var diceSum = 0;
+            $scope.diceSum = 0;
 
             // var arr = document.getElementById('diceResults').children;
             // for (var j = 0; j < arr.length; j++) {
             //     diceSum += Number(arr[j].getAttribute('data-diceValue'));
             // }
             chosenDices.forEach(function(item){
-                diceSum += Number(item.substr(21, 1));
+                $scope.diceSum += Number(item.substr(21, 1));
             });
-            $scope.DiceTotalValue = diceSum;
-
-            set(diceSum, chosenDices);
+            $scope.DiceTotalValue = $scope.diceSum;
+            $scope.score.Player['name'] = userDetails.name;
+            $scope.score.Player['id'] = userDetails._id;
+            $scope.score.Player['value'] = $scope.diceSum;
+            // set($scope.diceSum, chosenDices);
         };
 
         // Get details of who the player has bet on, hide the modal explicitly and roll the player's dice
@@ -415,7 +417,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 $scope.gameWinner = $scope.dealerTableDetails.data.Dealer._id;
             }
             $('#myModal').modal('hide');
-            $scope.rollDice();
+            // $scope.rollDice();
 
         };
 
@@ -474,6 +476,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 document.getElementById('you').textContent = mySign;
             },
             callback: function(m) {
+                $scope.score.Dealer['name'] = m.playerName;
+                $scope.score.Dealer['id'] = m.player;
+                $scope.score.Dealer['value'] = m.diceValue;
             	checkGameStatus(m.player, m.diceValue);
             },
         });
@@ -484,7 +489,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             pubnub.publish({
                 channel: channelName,
                 message: {
-                    player: player._id._id,
+                    player: player._id,
                     playerName: player.name,
                     playerData: player,
                     diceValue: diceValue,
@@ -565,6 +570,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     		resultContainer.innerHTML += dice;
                     	});
                     };
+                    set($scope.diceSum, chosenDices);
                 }else{
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
                     // Publish the Round Time to all the players playing the game
@@ -707,7 +713,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         };
 
         function set(diceSum, chosenDices) {
-            if ($scope.turn !== mySign) return;
+            // if ($scope.turn !== mySign) return;
             publishPosition(userDetails, 'this.dataset.position', 'played', diceSum, chosenDices, userDetails._id,  $scope.gameWinner);
         }
 

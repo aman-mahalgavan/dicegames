@@ -418,7 +418,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 		      diceSum += Number(arr[j].getAttribute('data-diceValue'));
 		    }
 		    $scope.DiceTotalValue = diceSum;
-		    set(diceSum);
+		    set(diceSum, chosenDices);
 		};
 
 		/* ============== Publish & subscribe using Pubnub ============== */
@@ -447,20 +447,25 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         // This is a private channel between the dealer and the player.
         function subscribeToPlayersChannel(channel){
         	$scope.playersPrivateChannel = channel;
+            console.log('playersPrivateChannel');
+            console.log($scope.playersPrivateChannel);
             pubnub.subscribe({
                 channel: channel,
                 presence: function(m){
-                    console.log("Dealer's subscribes to player's channel - presence");
+                    console.log("Dealer's subscribeToPlayersChannel - presence");
                     console.log(m);
                 },
                 callback: function(m){
-                    console.log("Dealer's subscribes to player's channel - callback");
+                    console.log("Dealer's subscribeToPlayersChannel - callback");
                     console.log(m);
-                    if(m.player && m.playerName && m.diceValue && m.betOn){
+                    // if(m.player && m.playerName && m.diceValue && m.betOn){
+                    if(m.player && m.playerName && m.diceValue){
                         $scope.score.Player['id'] = m.player;
                         $scope.score.Player['name'] = m.playerName;
                         $scope.score.Player['value'] = m.diceValue;    
                         $scope.gameWinner = m.betOn;
+                    }else{
+                        console.log(m.playerName + 'Folded.');
                     };
 
                     if($scope.waitTimer && $scope.waitTimer > 0 ){
@@ -489,13 +494,14 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         };
 
         // Publish Dealer's data on a public channel which the players will subscribe to.
-        function publishPosition(player, position, status, diceValue) {
+        function publishPosition(dealer, position, status, diceValue, dealerName, chosenDies) {
 
             pubnub.publish({
                 // channel_group: 'AllChannels',
                 channel: dealersTable.data._id,
                 message: {
-                    player: player,
+                    player: dealer,
+                    playerName: dealerName,
                     position: position,
                     diceValue: diceValue,
                     channel: gameChannel
@@ -506,7 +512,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // if(m.diceValue > 0){
                     //     checkGameStatus(m.player, m.diceValue);    
                     // }
-                    checkGameStatus(player, diceValue);    
+                    checkGameStatus(dealer, diceValue);    
                 }
             });                
         };
@@ -725,6 +731,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             console.log('Score for player, ' + player );
             console.log($scope.score);
 
+            console.log("Check game status- player");
+            console.log(player +' | ' + el );
             if(player == userDetails._id){
                 $scope.score.Dealer.value = el;
             };
@@ -755,8 +763,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         };
 
         // publish Dealer's dice on the public channel
-        function set(diceValue) {
-        	publishPosition(mySign, 'this.dataset.position', 'played', diceValue);
+        function set(diceValue, chosendices) {
+        	publishPosition(mySign, 'this.dataset.position', 'played', diceValue, userDetails.name, chosendices);
         };
 
 	};
