@@ -60,16 +60,16 @@ angular.module('dicegamesProjectApp').controller('createTableController', functi
 
     var vid_thumb = document.getElementById("vid-preview");
     
-    var phone1 = window.phone1 = PHONE({
-        number: 'preview',
-        ssl: true,
-        publish_key: pubnubConfig.publish_key,
-        subscribe_key: pubnubConfig.subscribe_key,
-    });
-    var ctrl1 = window.ctrl1 = CONTROLLER(phone1);
-    ctrl1.ready(function() {
-        ctrl1.addLocalStream(vid_thumb);
-    });
+    // var phone1 = window.phone1 = PHONE({
+    //     number: 'preview',
+    //     ssl: true,
+    //     publish_key: pubnubConfig.publish_key,
+    //     subscribe_key: pubnubConfig.subscribe_key,
+    // });
+    // var ctrl1 = window.ctrl1 = CONTROLLER(phone1);
+    // ctrl1.ready(function() {
+    //     ctrl1.addLocalStream(vid_thumb);
+    // });
         
 
 });

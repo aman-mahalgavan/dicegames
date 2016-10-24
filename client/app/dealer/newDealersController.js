@@ -46,6 +46,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             if (fromState.name == 'dealer') {
                 var confirmed = confirm('You are about to leave the table. Table will be closed.');
                 if (confirmed) {
+                    connection.close($scope.userDetails._id);
                     $http.post('/api/tables/removeTable', { tableId: $scope.dealerTableDetails.data._id }).success(function(response) {
                         console.log("Table Removed");
                     }).error(function(err) {
@@ -62,7 +63,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
     /* DOM Elements for Showing the Video */
     var video_out = document.getElementById("dealersVideo");
     var vid_thumb = document.getElementById("vid-thumb");
-
+    var connection;
 	// TODO: Video Broadcast Logic
 	// function startDealersVideoStream(userDetails, tableDetails) {
  //        $scope.phone = window.phone = PHONE({
@@ -109,7 +110,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         // MIT License   - https://www.webrtc-experiment.com/licence/
         // Documentation - https://github.com/muaz-khan/RTCMultiConnection
 
-        var connection = new RTCMultiConnection();
+        connection = new RTCMultiConnection();
         connection.session = {
             audio: true,
             video: true,
@@ -710,6 +711,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value > $scope.score.Player.value){
                     return $scope.score.Player.name + ' Wins.'; // Player Wins
                 }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value < $scope.score.Player.value){
+                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value == $scope.score.Player.value){
                     return $scope.score.Dealer.name + ' Wins.'; // Player loses
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value > $scope.score.Player.value){
                     return $scope.score.Dealer.name + ' Wins.'; // Player loses

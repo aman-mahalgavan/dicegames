@@ -670,6 +670,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     return $scope.score.Player.name + ' Wins.'; // Player Wins
                 }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value < $scope.score.Player.value){
                     return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value == $scope.score.Player.value){
+                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value > $scope.score.Player.value){
                     return $scope.score.Dealer.name + ' Wins.'; // Player loses
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value < $scope.score.Player.value){
