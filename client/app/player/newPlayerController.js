@@ -44,60 +44,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
     var vid_thumb = document.getElementById("vid-thumb");
 
     // Live Video Stream
-    // function startPlayersVideoStream(userDetails, tableDetails) {
-    //     var phone = window.phone = PHONE({
-    //         // number: $state.params.username,
-    //         number: userDetails.name,
-    //         publish_key: pubnubConfig.publish_key,
-    //         subscribe_key: pubnubConfig.subscribe_key,
-    //         ssl: pubnubConfig.ssl,
-    //         uuid: userDetails.name,
-    //         media: { audio: false, video: true },
-    //         // oneway:true
-    //     });
-    //     var ctrl = window.ctrl = CONTROLLER(phone);
-    //     ctrl.ready(function() {
-    //         // ctrl.addLocalStream(vid_thumb);
-    //         addLog("Logged in as SampleUser");
-    //     });
-
-
-    //     ctrl.receive(function(session) {
-    //         session.connected(function(session) {
-    //             $(video_out).html(session.video);
-    //             console.log(session.number + " has joined.");
-    //             addLog(session.number + " has joined.");
-    //         });
-    //         session.ended(function(session) {
-    //             // ctrl.getVideoElement(session.number).remove();
-    //             addLog(session.number + " has left.");
-    //             // vidCount--;
-    //         });
-    //     });
-    //     ctrl.videoToggled(function(session, isEnabled) {
-    //         ctrl.getVideoElement(session.number).toggle(isEnabled);
-    //         addLog(session.number + ": video enabled - " + isEnabled);
-    //     });
-    //     ctrl.audioToggled(function(session, isEnabled) {
-    //         ctrl.getVideoElement(session.number).css("opacity", isEnabled ? 1 : 0.75);
-    //         addLog(session.number + ": audio enabled - " + isEnabled);
-    //     });
-
-    //     if (!window.phone) alert("Login First!");
-    //     var num = $state.params.tableId;
-    //     // var num = tableDetails.data._id;
-    //     console.log("Dialing Table => " + num);
-    //     // if (phone.number() == num) return false; // No calling yourself!
-    //     ctrl.isOnline(num, function(isOn) {
-    //         // alert("checking if user is online-  " + isOn + "num- " + num);
-    //         if (isOn){
-    //             ctrl.dial(num);
-    //         } 
-    //         else {
-    //             alert(tableDetails.data._id + " is Offline");
-    //         }
-    //     });
-    // };
+    
     function broadcastVideo(userDetails, tableDetails){
         // Muaz Khan     - https://github.com/muaz-khan
         // MIT License   - https://www.webrtc-experiment.com/licence/
@@ -220,40 +167,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         };
 
         window.onresize = scaleVideos;
-    }
-
-    // $scope.mute = function() {
-    //     var audio = ctrl.toggleAudio();
-    //     if (!audio) $("#mute").html("Unmute");
-    //     else $("#mute").html("Mute");
-    // };
-
-    // $scope.end = function() {
-    //     ctrl.hangup();
-    // };
-
-    // $scope.pause = function() {
-    //     var video = ctrl.toggleVideo();
-    //     if (!video) $('#pause').html('Unpause');
-    //     else $('#pause').html('Pause');
-    // };
-
-    // function getVideo(number) {
-    //     return $('*[data-number="' + number + '"]');
-    // };
-
-    // function addLog(log) {
-    //     // $('#logs').append("<p>" + log + "</p>");
-    // };
-
-    // $scope.errWrap = function(fxn, form) {
-    //     try {
-    //         return fxn(form);
-    //     } catch (err) {
-    //         alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
-    //         return false;
-    //     }
-    // };
+    };
 
     /* ========================================== */
     /* ================== CHAT ================== */
@@ -401,7 +315,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             chosenDices.forEach(function(item){
                 $scope.diceSum += Number(item.substr(21, 1));
             });
-            $scope.DiceTotalValue = $scope.diceSum;
+            // $scope.DiceTotalValue = $scope.diceSum;
             $scope.score.Player['name'] = userDetails.name;
             $scope.score.Player['id'] = userDetails._id;
             $scope.score.Player['value'] = $scope.diceSum;
@@ -410,7 +324,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
         // Get details of who the player has bet on, hide the modal explicitly and roll the player's dice
         $scope.placeBet = function(betAmount, betOn) {
-            
+            document.getElementById('bet').setAttribute('disabled', 'disabled');
+            document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
+            document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
             if (betOn == 'me') {
                 $scope.gameWinner = $scope.userDetails._id;
             } else if (betOn == 'dealer') {
@@ -484,7 +400,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         });
 
         // Publish Player's data on private channel which the dealer is subscribed to
-        function publishPosition(player, position, status, diceValue, chosenDices, channelName, gameWinner) {
+        function publishPosition(player, position, status, diceValue, chosenDices, channelName, gameWinner, betAmount) {
           
             pubnub.publish({
                 channel: channelName,
@@ -496,13 +412,14 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     dice: chosenDices,
                     channel: channelName,
                     betOn : gameWinner,
+                    betAmt : betAmount,
                     flag: "publishing player's move"
                 },
                 callback: function(m) {
                     // $scope.score[m.player] = m.diceValue;
                     console.log("Publish Player");
                     console.log(m);
-                    checkGameStatus(userDetails._id, diceValue);
+                    // checkGameStatus(userDetails._id, diceValue);
                 }
             });
         };
@@ -534,6 +451,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         waitTimer(timerValue).startTimer(0);
                     };
                     if(m.data.flag == 'startRound'){
+                        // if(waitInterval){
+                        //     clearInterval(waitInterval);
+                        // }
                         roundTimer(timerValue).startTimer(0);
                         // Enable all playing controls while the round is going on
                         document.getElementById('bet').removeAttribute('disabled');
@@ -667,17 +587,17 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             if($scope.score.Dealer.value && $scope.score.Dealer.value != 0 && $scope.score.Player.value && $scope.score.Player.value !=0 ){
                 
                 if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value > $scope.score.Player.value){
-                    return $scope.score.Player.name + ' Wins.'; // Player Wins
+                    return $scope.score.Player.name + ' Won $' + $scope.betAmount; // Player Wins
                 }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value < $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value == $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value > $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value < $scope.score.Player.value){
-                    return $scope.score.Player.name + ' Wins.'; // Player wins
+                    return $scope.score.Player.name + ' Won $' + $scope.betAmount; // Player wins
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value == $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else{
                     return false;
                 }
@@ -699,10 +619,17 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             }
 
             if (win($scope.score)) {
-                alert(win($scope.score));
+                // alert(win($scope.score));
+                
+                // Display Dice and the amount won/lost in the round in the results container
+                document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
+                $scope.resultingDice.forEach(function(dice){
+                    document.getElementById('playersResults').innerHTML += dice;
+                });
+                document.getElementById('playersResults').innerHTML += win($scope.score) + '</div>';
                 document.getElementById('bet').disabled = false;
                 // Reset scores when a round is over and somebody has won the round
-                startNewGame();
+                // startNewGame();
             } 
             // else if (moves > 2) {
             //     swal('Reset Game', 'error');
@@ -716,7 +643,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
         function set(diceSum, chosenDices) {
             // if ($scope.turn !== mySign) return;
-            publishPosition(userDetails, 'this.dataset.position', 'played', diceSum, chosenDices, userDetails._id,  $scope.gameWinner);
+            publishPosition(userDetails, 'this.dataset.position', 'played', diceSum, chosenDices, userDetails._id,  $scope.gameWinner, $scope.betAmount);
         }
 
     };

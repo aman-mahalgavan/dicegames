@@ -47,12 +47,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 var confirmed = confirm('You are about to leave the table. Table will be closed.');
                 if (confirmed) {
                     connection.close($scope.userDetails._id);
-                    $http.post('/api/tables/removeTable', { tableId: $scope.dealerTableDetails.data._id }).success(function(response) {
-                        console.log("Table Removed");
-                    }).error(function(err) {
-                        console.log("Error Removing the Table");
-                        console.log(err);
-                    });
+                    deleteTable($scope.dealerTableDetails.data._id);
                 } else {
                     return;
                 };
@@ -60,51 +55,23 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
     });
 
+    function deleteTable(tableID){
+        if(!tableID){
+            tableID = $scope.dealerTableDetails.data._id;
+        }
+        $http.post('/api/tables/removeTable', { tableId: tableID }).success(function(response) {
+            console.log("Table Removed");
+        }).error(function(err) {
+            console.log("Error Removing the Table");
+            console.log(err);
+        });
+    }
+
     /* DOM Elements for Showing the Video */
     var video_out = document.getElementById("dealersVideo");
     var vid_thumb = document.getElementById("vid-thumb");
     var connection;
 	// TODO: Video Broadcast Logic
-	// function startDealersVideoStream(userDetails, tableDetails) {
- //        $scope.phone = window.phone = PHONE({
- //            number: $state.params.tableId,
- //            publish_key: pubnubConfig.publish_key,
- //            subscribe_key: pubnubConfig.subscribe_key,
- //            ssl: pubnubConfig.ssl,
- //            uuid: pubnubConfig.uuid
- //        });
-
- //        $scope.ctrl = window.ctrl = CONTROLLER($scope.phone);
-
- //        $scope.ctrl.ready(function() {
- //            $scope.ctrl.addLocalStream(vid_thumb);
- //            addLog("Logged in as " + userDetails.firstname);
- //        });
-
- //        $scope.ctrl.receive(function(session) {
- //            session.connected(function(session) {
- //                video_out.appendChild(session.video);
- //                addLog(session.number + " has joined.");
- //                // vidCount++;
- //            });
- //            session.ended(function(session) {
- //                ctrl.getVideoElement(session.number).remove();
- //                addLog(session.number + " has left.");
- //                // vidCount--;
- //            });
- //        });
-
- //        $scope.ctrl.videoToggled(function(session, isEnabled) {
- //            $scope.ctrl.getVideoElement(session.number).toggle(isEnabled);
- //            addLog(session.number + ": video enabled - " + isEnabled);
- //        });
-
- //        $scope.ctrl.audioToggled(function(session, isEnabled) {
- //            $scope.ctrl.getVideoElement(session.number).css("opacity", isEnabled ? 1 : 0.75);
- //            addLog(session.number + ": audio enabled - " + isEnabled);
- //        });
- //    };
-
     function broadcastVideo(userDetails, tableDetails){
         // Muaz Khan     - https://github.com/muaz-khan
         // MIT License   - https://www.webrtc-experiment.com/licence/
@@ -122,7 +89,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
         connection.onstream = function(e) {
             e.mediaElement.width = '100%';
-            e.mediaElement.style.transform = 'rotateY(180deg)';
+            // e.mediaElement.style.transform = 'rotateY(180deg)';
             videosContainer.insertBefore(e.mediaElement, videosContainer.firstChild);
             // rotateVideo(e.mediaElement);
             scaleVideos();
@@ -222,56 +189,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         };
 
         window.onresize = scaleVideos;
-    }
-
-     // // Call Options
-    // function makeCall(form) {
-    //     if (!window.phone) alert("Login First!");
-    //     var num = form.number.value;
-    //     if ($scope.phone.number() == num) return false; // No calling yourself!
-    //     $scope.ctrl.isOnline(num, function(isOn) {
-    //         if (isOn) {
-    //             $scope.ctrl.dial(num);
-    //         } else {
-    //             alert("User is Offline");
-    //         }
-    //     });
-    //     return false;
-    // }
-
-    // $scope.mute = function() {
-    //     var audio = $scope.ctrl.toggleAudio();
-    //     if (!audio) $("#mute").html("Unmute");
-    //     else $("#mute").html("Mute");
-    // }
-
-    // $scope.end = function() {
-    //     $scope.ctrl.hangup();
-    // }
-
-    // $scope.pause = function() {
-    //     var video = $scope.ctrl.toggleVideo();
-    //     if (!video) $('#pause').html('Unpause');
-    //     else $('#pause').html('Pause');
-    // }
-
-    // function getVideo(number) {
-    //     return $('*[data-number="' + number + '"]');
-    // }
-
-    // function addLog(log) {
-    //     // console.log(log); 
-    //     // $('#logs').append("<p>" + log + "</p>");
-    // }
-
-    // $scope.errWrap = function(fxn, form) {
-    //     try {
-    //         return fxn(form);
-    //     } catch (err) {
-    //         alert("WebRTC is currently only supported by Chrome, Opera, and Firefox");
-    //         return false;
-    //     }
-    // }
+    };
 
     /* ========================================== */
     /* ================== CHAT ================== */
@@ -403,6 +321,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 		var uuid = JSON.stringify(userDetails);
 		var mySign = userDetails._id;
 
+        $scope.resultingDice = [];
 		// Roll Dealer's Dice
 		$scope.rollDice = function() {
 		    // document.getElementById('rollDice').setAttribute('disabled', 'disabled');
@@ -412,13 +331,14 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 		        var dice = diceArray[Math.floor(Math.random() * diceArray.length)]
 		        chosenDices.push(dice);
 		        resultContainer.innerHTML += dice;
+                $scope.resultingDice = angular.copy(chosenDices);
 		    };
 		    var arr = document.getElementById('diceResults').children;
 		    var diceSum = 0;
 		    for(var j=0;j<arr.length;j++){
 		      diceSum += Number(arr[j].getAttribute('data-diceValue'));
 		    }
-		    $scope.DiceTotalValue = diceSum;
+		    // $scope.DiceTotalValue = diceSum;
 		    set(diceSum, chosenDices);
 		};
 
@@ -465,6 +385,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                         $scope.score.Player['name'] = m.playerName;
                         $scope.score.Player['value'] = m.diceValue;    
                         $scope.gameWinner = m.betOn;
+                        $scope.betAmount = m.betAmt;
                     }else{
                         console.log(m.playerName + 'Folded.');
                     };
@@ -475,7 +396,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                         // $scope.timer = 20;
                         publishToPlayer(channel, "Please Wait for this round to finish!");
                     }
-                    checkGameStatus(m.player, m.diceValue);
+                    checkGameStatus(m.player, m.diceValue, $scope.betAmount);
                 }
             }); 
         };
@@ -559,7 +480,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 	            	
 	            });
             }
-        }
+        };
 
         function startRound(){
             $scope.roundStarted = true;
@@ -575,7 +496,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             	
             });
             // startNewGame();
-        }
+        };
 
 
         function rollDiceOnce(){
@@ -585,7 +506,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             // setTimeout(function(){
             //     startNewGame(10, display);
             // }, 10000);
-        }
+        };
 
 		// Timers
 
@@ -709,17 +630,17 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 //     return false;
                 // }
                 if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value > $scope.score.Player.value){
-                    return $scope.score.Player.name + ' Wins.'; // Player Wins
+                    return $scope.score.Player.name + ' Won $' + $scope.betAmount; // Player Wins
                 }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value < $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else if($scope.gameWinner == $scope.score.Dealer.id && $scope.score.Dealer.value == $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value > $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value < $scope.score.Player.value){
-                    return $scope.score.Player.name + ' Wins.'; // Player wins
+                    return $scope.score.Player.name + ' Won $' + $scope.betAmount; // Player wins
                 }else if($scope.gameWinner == $scope.score.Player.id && $scope.score.Dealer.value == $scope.score.Player.value){
-                    return $scope.score.Dealer.name + ' Wins.'; // Player loses
+                    return $scope.score.Player.name + ' Lost $' + $scope.betAmount; // Player loses
                 }else{
                     return false;
                 }
@@ -741,22 +662,31 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             };
 
             if (win($scope.score)) {
-                alert(win($scope.score));
+                // alert(win($scope.score));
+                
+                // Display Dice and the amount won/lost in the round in the results container
+                document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
+                $scope.resultingDice.forEach(function(dice){
+                    document.getElementById('playersResults').innerHTML += dice;
+                });
+                document.getElementById('playersResults').innerHTML += win($scope.score) + '</div>';
+
                 // Reset scores when a round is over and somebody has won the round
-                startNewGame();
-
-                pubnub.time(function(time){ 
-
-	            	// Convert pubnub timeToken to IST --> 
-	            	var pubnubTime = new Date(time/1e4);
-	            	console.log("Dealer publishing the PubNub time to the player - Wait Time");
-	            	console.log(pubnubTime);
-
-                    // Publish the Wait Time to all the players playing the game and start the timer for the dealer
-                	waitTimer(10).startTimer(0);
-                	publishToPlayer($scope.playersPrivateChannel, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
-	            	
-	            });
+                setTimeout(function(){
+                    startNewGame();
+                    pubnub.time(function(time){ 
+                        
+                            // Convert pubnub timeToken to IST --> 
+                            var pubnubTime = new Date(time/1e4);
+                            console.log("Dealer publishing the PubNub time to the player - Wait Time");
+                            console.log(pubnubTime);
+                            
+                            // start the wait timer for the next round after 5 seconds
+                            // Publish the Wait Time to all the players playing the game and start the timer for the dealer
+                            waitTimer(10).startTimer(0);
+                            publishToPlayer($scope.playersPrivateChannel, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+    	            });
+                }, 5000);
             } 
 
             else {
