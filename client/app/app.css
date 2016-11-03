@@ -181,7 +181,7 @@ div#chatWindow{
 #box, .playersList{
     overflow-x:hidden;
     overflow-y: auto;
-    height: 75%;
+    height: 400px;
 }
 #chatContainer::-webkit-scrollbar, .playersList::-webkit-scrollbar{
     width:8px;

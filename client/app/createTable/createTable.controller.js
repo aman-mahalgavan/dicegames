@@ -35,11 +35,7 @@ angular.module('dicegamesProjectApp').controller('createTableController', functi
     	obj['dealerId'] = $scope.userDetails._id;
         console.log(obj);
     	$http.post('/api/tables/createTable', obj).success(function(response){
-    		if(response.flag == 1){
-    			// localStorage.setItem('tableUrl', response.data.tableUrl);
-                // localStorage.setItem('tableId', response.data.table_id);
-                // $cookieStore.put('tableUrl', response.data.tableUrl);
-                // $state.go('dealer', {host: response.data.table_id, tableName:$scope.tableName });   
+    		if(response.flag == 1){ 
     			$state.go('dealer', {tableId: response.data.tableUrl});	
     		}else{
     			swal("Error creating a New Table", ""+response.msg + "", "error");
@@ -54,22 +50,37 @@ angular.module('dicegamesProjectApp').controller('createTableController', functi
 
     /*
     	======================================
-    	=============== VIDEO ================
+    	=========== VIDEO Preview ============
     	======================================
     */
 
     var vid_thumb = document.getElementById("vid-preview");
     
-    // var phone1 = window.phone1 = PHONE({
-    //     number: 'preview',
-    //     ssl: true,
-    //     publish_key: pubnubConfig.publish_key,
-    //     subscribe_key: pubnubConfig.subscribe_key,
-    // });
-    // var ctrl1 = window.ctrl1 = CONTROLLER(phone1);
-    // ctrl1.ready(function() {
-    //     ctrl1.addLocalStream(vid_thumb);
-    // });
-        
+    var connection = new RTCMultiConnection();
+    connection.session = {
+        audio: true,
+        video: true,
+        oneway: true
+    };
+
+    connection.channel = 'preview';
+
+    connection.onstream = function(e) {
+        e.mediaElement.width = '100%';
+        vid_thumb.insertBefore(e.mediaElement, vid_thumb.firstChild);
+    };
+
+    connection.open('preview');
+    connection.connect();
+    
+    // End Preview Video on state change
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            console.log("State Change");
+            if (fromState.name == 'createTable') {
+                // Close connection
+                connection.close('preview');
+            };
+    });
+
 
 });

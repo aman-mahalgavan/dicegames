@@ -32,9 +32,14 @@
 				<label for="">Privacy</label>
 				<div class="btn-group">
 					<button class="btn btn-default" ng-model="privacy" value="1" ng-click="privacy = 'true'">Public</button>
-					<button class="btn btn-default" ng-model="privacy" value="0" ng-click="privacy = 'false'">Private</button>	
+					<button class="btn btn-default" ng-model="privacy" value="0" ng-click="privacy = 'false'">Private</button>
 				</div>
-				<p class="text-muted">Public games listed. Private games only accessible with link.</p>
+                <p class="text-muted">Your Table will be hosted as 
+                    <span ng-if="privacy == 'true'" style="font-weight:bold;">Public</span> 
+                    <span ng-if="privacy == 'false'" style="font-weight:bold;">Private</span>
+                    <span ng-if="!privacy" style="font-weight:bold;">-</span>.
+                </p>
+				<p class="text-muted">Public games will be listed. Private games will only be accessible via a unique link.</p>
 			</div>
 
 			<button class="btn btn-default" ng-click="hostNewTable()">Host New Table</button>

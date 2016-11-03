@@ -71,7 +71,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
     var video_out = document.getElementById("dealersVideo");
     var vid_thumb = document.getElementById("vid-thumb");
     var connection;
-	// TODO: Video Broadcast Logic
+	
+    // TODO: Video Broadcast Logic
     function broadcastVideo(userDetails, tableDetails){
         // Muaz Khan     - https://github.com/muaz-khan
         // MIT License   - https://www.webrtc-experiment.com/licence/
@@ -137,7 +138,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         //     };
         // };
 
-        var videosContainer = document.getElementById('videos-container') || document.body;
+        var videosContainer = document.getElementById('videos-container');
         var roomsList = document.getElementById('rooms-list');
         connection.open(userDetails._id);
         // document.getElementById('setup-new-broadcast').onclick = function() {
@@ -309,11 +310,14 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
 		// dice images
 		var diceOne = '<img data-diceValue="1" src="../../assets/images/diceone.png" style="margin-right:10px;">';
-		var diceTwo = '<img data-diceValue="2" src="../../assets/images/dicetwo.png" style="margin-right:10px;">';
-		var diceFour = '<img data-diceValue="4" src="../../assets/images/dicefour.png" style="margin-right:10px;">';
+        var diceTwo = '<img data-diceValue="2" src="../../assets/images/dicetwo.png" style="margin-right:10px;">';
+		var diceThree = '<img data-diceValue="3" src="../../assets/images/diceThree.png" style="margin-right:10px;">';
+        var diceFour = '<img data-diceValue="4" src="../../assets/images/dicefour.png" style="margin-right:10px;">';
+        var diceFive = '<img data-diceValue="5" src="../../assets/images/diceFive.png" style="margin-right:10px;">';
+		var diceSix = '<img data-diceValue="6" src="../../assets/images/diceSix.png" style="margin-right:10px;">';
 
 		var diceArray = [];
-		diceArray.push(diceOne, diceTwo, diceFour);
+		diceArray.push(diceOne, diceTwo, diceThree, diceFour, diceFive, diceSix);
 
 		// Set up Game Requirements
 		var gameid = dealersTable.data._id;
@@ -386,8 +390,26 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                         $scope.score.Player['value'] = m.diceValue;    
                         $scope.gameWinner = m.betOn;
                         $scope.betAmount = m.betAmt;
-                    }else{
-                        console.log(m.playerName + 'Folded.');
+                    }else if(m.flag == 'Player Folded'){
+                        // console.log(m.playerName + 'Folded.');
+                        document.getElementById('playersResults').innerHTML +=  '<div>' + m.playerName + ' Folded.</div>';
+                        // resultContainer.innerHTML += '<div>' + m.playerName + 'Folded.</div>';
+
+                        // Reset scores when a round is over and somebody has won the round
+                        setTimeout(function(){
+                            startNewGame();
+                            pubnub.time(function(time){
+                                // Convert pubnub timeToken to IST --> 
+                                var pubnubTime = new Date(time/1e4);
+                                console.log("Dealer publishing the PubNub time to the player - Wait Time");
+                                console.log(pubnubTime);
+                                
+                                // start the wait timer for the next round after 5 seconds
+                                // Publish the Wait Time to all the players playing the game and start the timer for the dealer
+                                waitTimer(10).startTimer(0);
+                                publishToPlayer($scope.playersPrivateChannel, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+                            });
+                        }, 5000);
                     };
 
                     if($scope.waitTimer && $scope.waitTimer > 0 ){
@@ -674,17 +696,16 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 // Reset scores when a round is over and somebody has won the round
                 setTimeout(function(){
                     startNewGame();
-                    pubnub.time(function(time){ 
+                    pubnub.time(function(time){
+                        // Convert pubnub timeToken to IST --> 
+                        var pubnubTime = new Date(time/1e4);
+                        console.log("Dealer publishing the PubNub time to the player - Wait Time");
+                        console.log(pubnubTime);
                         
-                            // Convert pubnub timeToken to IST --> 
-                            var pubnubTime = new Date(time/1e4);
-                            console.log("Dealer publishing the PubNub time to the player - Wait Time");
-                            console.log(pubnubTime);
-                            
-                            // start the wait timer for the next round after 5 seconds
-                            // Publish the Wait Time to all the players playing the game and start the timer for the dealer
-                            waitTimer(10).startTimer(0);
-                            publishToPlayer($scope.playersPrivateChannel, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+                        // start the wait timer for the next round after 5 seconds
+                        // Publish the Wait Time to all the players playing the game and start the timer for the dealer
+                        waitTimer(10).startTimer(0);
+                        publishToPlayer($scope.playersPrivateChannel, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
     	            });
                 }, 5000);
             } 
@@ -692,6 +713,22 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             else {
                 turn = (turn === dealersTable.data.Dealer._id) ? userDetails._id : dealersTable.data.Dealer._id;
                 // whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
+
+                // Reset scores when a round is over and somebody has won the round
+                // setTimeout(function(){
+                //     startNewGame();
+                //     pubnub.time(function(time){
+                //         // Convert pubnub timeToken to IST --> 
+                //         var pubnubTime = new Date(time/1e4);
+                //         console.log("Dealer publishing the PubNub time to the player - Wait Time");
+                //         console.log(pubnubTime);
+                        
+                //         // start the wait timer for the next round after 5 seconds
+                //         // Publish the Wait Time to all the players playing the game and start the timer for the dealer
+                //         waitTimer(10).startTimer(0);
+                //         publishToPlayer($scope.playersPrivateChannel, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+                //     });
+                // }, 5000);
             }
         };
 

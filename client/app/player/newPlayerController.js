@@ -279,10 +279,13 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         // dice images
         var diceOne = '<img data-diceValue="1" src="../../assets/images/diceone.png" style="margin-right:10px;">';
         var diceTwo = '<img data-diceValue="2" src="../../assets/images/dicetwo.png" style="margin-right:10px;">';
+        var diceThree = '<img data-diceValue="3" src="../../assets/images/diceThree.png" style="margin-right:10px;">';
         var diceFour = '<img data-diceValue="4" src="../../assets/images/dicefour.png" style="margin-right:10px;">';
+        var diceFive = '<img data-diceValue="5" src="../../assets/images/diceFive.png" style="margin-right:10px;">';
+        var diceSix = '<img data-diceValue="6" src="../../assets/images/diceSix.png" style="margin-right:10px;">';
 
         var diceArray = [];
-        diceArray.push(diceOne, diceTwo, diceFour);
+        diceArray.push(diceOne, diceTwo, diceThree, diceFour, diceFive, diceSix);
 
         // Set up Game Gequirements
         var gameid = dealersTable.data._id;
@@ -333,7 +336,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 $scope.gameWinner = $scope.dealerTableDetails.data.Dealer._id;
             }
             $('#myModal').modal('hide');
-            // $scope.rollDice();
+            $scope.rollDice(); // Roll dice when the player places a bet
 
         };
 
@@ -376,18 +379,18 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 // whosTurn
 
                 if (m.uuid === uuid && m.action === 'join') {
-                    if (m.occupancy < 2) {
-                        // whosTurn.textContent = 'Waiting for your opponent...';
-                    } else if (m.occupancy === 2) {
-                        mySign = userDetails._id;
-                    }
-                    // else if (m.occupancy > 2) {
-                    //     alert('This game already have two players!');
-                    //     // tictactoe.className = 'disabled';
+                    // if (m.occupancy < 2) {
+                    //     // whosTurn.textContent = 'Waiting for your opponent...';
+                    // } else if (m.occupancy === 2) {
+                    //     mySign = userDetails._id;
                     // }
-                    if (m.occupancy === 2) {
+                    // // else if (m.occupancy > 2) {
+                    // //     alert('This game already have two players!');
+                    // //     // tictactoe.className = 'disabled';
+                    // // }
+                    // if (m.occupancy === 2) {
                         startNewGame();
-                    }
+                    // }
                 }
                 document.getElementById('you').textContent = mySign;
             },
@@ -398,6 +401,24 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             	checkGameStatus(m.player, m.diceValue);
             },
         });
+
+        function publishFoldMessage(channelName, player){
+            pubnub.publish({
+                channel: channelName,
+                message: {
+                    player: player._id,
+                    playerName: player.name,
+                    playerData: player,
+                    flag: 'Player Folded'
+                },
+                callback: function(m) {
+                    // $scope.score[m.player] = m.diceValue;
+                    console.log("Publish Player");
+                    console.log(m);
+                    // checkGameStatus(userDetails._id, diceValue);
+                }
+            });
+        }
 
         // Publish Player's data on private channel which the dealer is subscribed to
         function publishPosition(player, position, status, diceValue, chosenDices, channelName, gameWinner, betAmount) {
@@ -438,7 +459,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     console.log(m);
                     
                     var publishedTime = m.data.timestamp;
-                    var endTime = moment(publishedTime).add((m.data.duration+1), 's');
+                    var endTime = moment(publishedTime).add((m.data.duration), 's');
                     var difference = moment().utc().diff(endTime, 'seconds');
                     console.log("difference in published time and players time");
                     console.log(difference);
@@ -451,14 +472,11 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         waitTimer(timerValue).startTimer(0);
                     };
                     if(m.data.flag == 'startRound'){
-                        // if(waitInterval){
-                        //     clearInterval(waitInterval);
-                        // }
+                        if($scope.waitInterval){
+                            clearInterval($scope.waitInterval);
+                        }
                         roundTimer(timerValue).startTimer(0);
-                        // Enable all playing controls while the round is going on
-                        document.getElementById('bet').removeAttribute('disabled');
-                        document.getElementById('decreaseBet').removeAttribute('disabled');
-                        document.getElementById('increaseBet').removeAttribute('disabled');
+                        
                     };
 
                 };
@@ -470,7 +488,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         var roundTimer = function (seconds) {
             var seconds = seconds; 
             var tens = 00; 
-            var roundInterval;
+            $scope.roundInterval;
 
             function startCounter (duration) {
                 
@@ -482,15 +500,20 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     }
                 }
                 if(seconds == duration){
-                    clearInterval(roundInterval);
+                    clearInterval($scope.roundInterval);
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
-                    $scope.rollDice();
+                    // $scope.rollDice(); // Roll dice when the round timer reaches 0
                     if($scope.resultingDice.length == 3){
                     	$scope.resultingDice.forEach(function(dice){
                     		resultContainer.innerHTML += dice;
-                    	});
+                        });
+                        set($scope.diceSum, chosenDices);
+                    }else{
+                        $scope.score.Player['value'] = 0;
+                        resultContainer.innerHTML += "You Folded. Please Wait for the Next Round to start."
+                        document.getElementById('playersResults').innerHTML += '<div>' + userDetails.name + ' Folded.</div>';
+                        publishFoldMessage(userDetails._id, userDetails);
                     };
-                    set($scope.diceSum, chosenDices);
                 }else{
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
                     // Publish the Round Time to all the players playing the game
@@ -504,9 +527,13 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             }
             return {
                 startTimer: function (duration, flag) {
+                    // Enable all playing controls while the round is going on
+                    document.getElementById('bet').removeAttribute('disabled');
+                    document.getElementById('decreaseBet').removeAttribute('disabled');
+                    document.getElementById('increaseBet').removeAttribute('disabled');
                     var time = duration;
-                    clearInterval(roundInterval);
-                    roundInterval = setInterval(function () {
+                    clearInterval($scope.roundInterval);
+                    $scope.roundInterval = setInterval(function () {
                         startCounter(time, flag);
                     }, 30);
                 }
@@ -516,7 +543,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         var waitTimer = function (seconds) {
             var seconds = seconds; 
             var tens = 00; 
-            var waitInterval;
+            $scope.waitInterval;
 
             function startCounter (duration) {
                 
@@ -528,7 +555,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     }
                 }
                 if(seconds == duration){
-                    clearInterval(waitInterval);
+                    clearInterval($scope.waitInterval);
                     display.textContent = 'Next Round will Start in ' + seconds + ' Seconds.';
                     
                 }else{
@@ -543,9 +570,11 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             }
             return {
                 startTimer: function (duration, flag) {
+                    $scope.resultingDice = [];
+                    $('#diceResults').html('');
                     var time = duration;
-                    clearInterval(waitInterval);
-                    waitInterval = setInterval(function () {
+                    clearInterval($scope.waitInterval);
+                    $scope.waitInterval = setInterval(function () {
                         startCounter(time, flag);
                     }, 30);
                 }
@@ -554,7 +583,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
         function startNewGame() {
             // document.getElementById('rollDice').removeAttribute('disabled');
-            resultContainer.innerHTML = "";
+            
+
+            
             $scope.resultingDice = [];
             var i;
             $scope.turn = userDetails._id;
@@ -630,7 +661,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 document.getElementById('bet').disabled = false;
                 // Reset scores when a round is over and somebody has won the round
                 // startNewGame();
-            } 
+            }
             // else if (moves > 2) {
             //     swal('Reset Game', 'error');
             // } 
