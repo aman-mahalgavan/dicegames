@@ -40,19 +40,29 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         });
     };
 
-    // Delete table when the dealer leaves the table
-    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-            console.log("State Change");
-            if (fromState.name == 'dealer') {
-                var confirmed = confirm('You are about to leave the table. Table will be closed.');
-                if (confirmed) {
-                    connection.close($scope.userDetails._id);
-                    deleteTable($scope.dealerTableDetails.data._id);
-                } else {
-                    return;
-                };
-            };
+    // Delete Table when the bowser window is closed or navigated to some other link
+    // $(window).on('unload', function(){
+        // connection.close($scope.userDetails._id);
+        // deleteTable($scope.dealerTableDetails.data._id);
+    // });
+    // window.onbeforeunload = function(e){
+    //     event.preventDefault();
+    //     connection.close($scope.userDetails._id);
+    //     deleteTable($scope.dealerTableDetails.data._id);
+    // };
 
+    // Delete table when the dealer leaves the table via state change
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        console.log("State Change");
+        if (fromState.name == 'dealer') {
+            var confirmed = confirm('You are about to leave the table. Table will be closed.');
+            if (confirmed) {
+                connection.close($scope.userDetails._id);
+                deleteTable($scope.dealerTableDetails.data._id);
+            } else {
+                return;
+            };
+        };
     });
 
     function deleteTable(tableID){
@@ -390,6 +400,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                         $scope.score.Player['value'] = m.diceValue;    
                         $scope.gameWinner = m.betOn;
                         $scope.betAmount = m.betAmt;
+                        $scope.playersDice = m.dice;
                     }else if(m.flag == 'Player Folded'){
                         // console.log(m.playerName + 'Folded.');
                         document.getElementById('playersResults').innerHTML +=  '<div>' + m.playerName + ' Folded.</div>';
@@ -438,7 +449,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         };
 
         // Publish Dealer's data on a public channel which the players will subscribe to.
-        function publishPosition(dealer, position, status, diceValue, dealerName, chosenDies) {
+        function publishPosition(dealer, position, status, diceValue, dealerName, chosenDice) {
 
             pubnub.publish({
                 // channel_group: 'AllChannels',
@@ -448,7 +459,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     playerName: dealerName,
                     position: position,
                     diceValue: diceValue,
-                    channel: gameChannel
+                    channel: gameChannel,
+                    dealersDice: chosenDice
                 },
                 callback: function(m) {
                     console.log("Publish Dealer");
@@ -688,7 +700,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 
                 // Display Dice and the amount won/lost in the round in the results container
                 document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
-                $scope.resultingDice.forEach(function(dice){
+                 $scope.playersDice.forEach(function(dice){
                     document.getElementById('playersResults').innerHTML += dice;
                 });
                 document.getElementById('playersResults').innerHTML += win($scope.score) + '</div>';

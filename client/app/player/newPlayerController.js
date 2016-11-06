@@ -270,6 +270,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
     	// DOM Elements
     	var resultContainer = document.getElementById('diceResults');
+        var dealersDiceContainer = document.getElementById('dealersDice');
     	var gameId = document.querySelector('#gameId');
     	var gameIdQuery = document.querySelector('#gameIdQuery');
     	var output = document.querySelector('#output');
@@ -302,6 +303,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
             document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
             resultContainer.innerHTML = "";
+            dealersDiceContainer.innerHTML = "";
             chosenDices = [];
             for (var i = 0; i < 3; i++) {
                 var dice = diceArray[Math.floor(Math.random() * diceArray.length)]
@@ -338,6 +340,10 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             $('#myModal').modal('hide');
             $scope.rollDice(); // Roll dice when the player places a bet
 
+            // Disable All Controls after the dice has been rolled
+            document.getElementById('bet').setAttribute('disabled', 'disabled');
+            document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
+            document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
         };
 
         // Increase/Decrease the bet amount value
@@ -398,6 +404,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 $scope.score.Dealer['name'] = m.playerName;
                 $scope.score.Dealer['id'] = m.player;
                 $scope.score.Dealer['value'] = m.diceValue;
+                // $scope.dealersDice = m.dealersDice;
+                dealersDiceContainer.innerHTML = m.dealersDice;
             	checkGameStatus(m.player, m.diceValue);
             },
         });
@@ -531,6 +539,10 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     document.getElementById('bet').removeAttribute('disabled');
                     document.getElementById('decreaseBet').removeAttribute('disabled');
                     document.getElementById('increaseBet').removeAttribute('disabled');
+
+                    // Clear Dealers Dice Images as the new round starts
+                    dealersDiceContainer.innerHTML = "";
+
                     var time = duration;
                     clearInterval($scope.roundInterval);
                     $scope.roundInterval = setInterval(function () {
@@ -572,6 +584,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 startTimer: function (duration, flag) {
                     $scope.resultingDice = [];
                     $('#diceResults').html('');
+                    dealersDiceContainer.innerHTML = m.dealersDice;
                     var time = duration;
                     clearInterval($scope.waitInterval);
                     $scope.waitInterval = setInterval(function () {

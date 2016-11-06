@@ -57,6 +57,7 @@ module.exports = function(app) {
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static('client'));
     // app.use('/assets', express.static(process.cwd() + '/client/assets'));
+    // app.use('/assets', express.static(__dirname + '/client/assets'));
     app.set('appPath', path.join(config.root, 'client'));
     app.use(morgan('dev'));
     app.use(errorHandler()); // Error handler - has to be last
