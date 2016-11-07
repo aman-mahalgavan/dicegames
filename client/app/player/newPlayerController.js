@@ -404,7 +404,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 $scope.score.Dealer['name'] = m.playerName;
                 $scope.score.Dealer['id'] = m.player;
                 $scope.score.Dealer['value'] = m.diceValue;
-                // $scope.dealersDice = m.dealersDice;
+                $scope.dealersDice = m.dealersDice;
                 dealersDiceContainer.innerHTML = m.dealersDice;
             	checkGameStatus(m.player, m.diceValue);
             },
@@ -584,7 +584,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 startTimer: function (duration, flag) {
                     $scope.resultingDice = [];
                     $('#diceResults').html('');
-                    dealersDiceContainer.innerHTML = m.dealersDice;
+                    dealersDiceContainer.innerHTML = $scope.dealersDice;
                     var time = duration;
                     clearInterval($scope.waitInterval);
                     $scope.waitInterval = setInterval(function () {

@@ -30,6 +30,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
            	
            	$scope.dealerTableDetails = dealersTable;
             // startDealersVideoStream(userDetails, dealersTable);
+            publishIDToServer(userDetails, dealersTable)
             broadcastVideo(userDetails, dealersTable);
             initiateChat(userDetails, dealersTable);
             initiateGame(userDetails, $scope.dealerTableDetails);
@@ -37,6 +38,20 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         }).error(function(error) {
             console.log("Unable to Find Dealer's Table");
             console.log(error);
+        });
+    };
+
+    function publishIDToServer(userDetails, tableDetails){
+        pubnub.publish({
+            channel: 'diceGamesDealerList',
+            message: {
+                user: userDetails,
+                table: tableDetails
+            },
+            callback: function(m) {
+                console.log("Publishing data to server");
+                console.log(m);
+            }
         });
     };
 
