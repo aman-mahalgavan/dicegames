@@ -148,6 +148,7 @@ div#chatWindow{
     padding: 10px;*/
     background-color: #ecf2f5;
     display: table-caption;
+    display: -moz-inline-box; /*Mozilla Compatibility*/
     vertical-align: bottom;
     width: 100%;
     padding: 10px;

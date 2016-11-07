@@ -362,18 +362,33 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
         /* ============== Publish & subscribe using Pubnub ============== */
 
-        // Player will publish his player ID to the dealers public channel
-        pubnub.publish({
-            channel: dealersTable.data.Dealer._id,
-            message: {
-                player: JSON.stringify(userDetails),
-                flag: 'publishing players channel ID'
-            },
-            callback: function(m) {
-                console.log("Publish Player");
-                console.log(m);
-            }
-        });
+        // Ask player is they want to start the game or not
+        setTimeout(function() {
+
+            swal({
+               title: "Do you want to start the game?",
+               text: "You will be able to bet once the game starts.",
+               type: "warning",
+               showCancelButton: false,
+               confirmButtonColor: "#DD6B55",
+               confirmButtonText: "Yes, Start the game!",
+               closeOnConfirm: true}, 
+            function(){ 
+                // Player will publish his player ID to the dealers public channel
+                pubnub.publish({
+                    channel: dealersTable.data.Dealer._id,
+                    message: {
+                        player: JSON.stringify(userDetails),
+                        flag: 'publishing players channel ID'
+                    },
+                    callback: function(m) {
+                        console.log("Publish Player");
+                        console.log(m);
+                    }
+                });
+            });
+
+        }, 6000);
 
         // Subscribe to Dealer's public channel to get dealer's moves
         pubnub.subscribe({

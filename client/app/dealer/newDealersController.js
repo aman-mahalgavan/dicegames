@@ -373,7 +373,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
 		/* ============== Publish & subscribe using Pubnub ============== */
 
-		// Subscribe to a public channel where players will publish their channel names only
+		// Subscribe to a public channel where players will publish their ID's only
         (function(){
 	        pubnub.subscribe({
 	            channel: dealersTable.data.Dealer._id,
@@ -633,6 +633,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             }
             return {
                 startTimer: function (duration, flag) {
+                    $scope.roundStarted = false;
                     var time = duration;
                     clearInterval(waitInterval);
                     waitInterval = setInterval(function () {
