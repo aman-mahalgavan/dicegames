@@ -366,7 +366,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         setTimeout(function() {
 
             swal({
-               title: "Do you want to start the game?",
+               title: "Dicegames will begin in a while.",
                text: "You will be able to bet once the game starts.",
                type: "warning",
                showCancelButton: false,
