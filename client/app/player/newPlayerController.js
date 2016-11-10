@@ -388,7 +388,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 });
             });
 
-        }, 6000);
+        }, 2000);
 
         // Subscribe to Dealer's public channel to get dealer's moves
         pubnub.subscribe({
