@@ -434,7 +434,9 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                                 // start the wait timer for the next round after 5 seconds
                                 // Publish the Wait Time to all the players playing the game and start the timer for the dealer
                                 waitTimer(10).startTimer(0);
-                                publishToPlayer($scope.playersPrivateChannel, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+                                $scope.playersInRound.forEach(function(item){
+                                    publishToPlayer(item._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+                                })
                             });
                         }, 5000);
                     };
