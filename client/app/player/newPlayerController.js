@@ -29,7 +29,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             $scope.betAmount = $scope.dealerTableDetails.data.AnteAmount;
 
             // startPlayersVideoStream(userDetails, dealersTable);
-            broadcastVideo(userDetails, dealersTable);
+            ReceiveVideo(userDetails, dealersTable);
             initiateChat(userDetails, dealersTable);
             initiateGame(userDetails, dealersTable);
 
@@ -45,7 +45,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
     // Live Video Stream
     
-    function broadcastVideo(userDetails, tableDetails){
+    function ReceiveVideo(userDetails, tableDetails){
         // Muaz Khan     - https://github.com/muaz-khan
         // MIT License   - https://www.webrtc-experiment.com/licence/
         // Documentation - https://github.com/muaz-khan/RTCMultiConnection
@@ -382,8 +382,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         flag: 'publishing players channel ID'
                     },
                     callback: function(m) {
-                        console.log("Publish Player");
-                        console.log(m);
+                        // console.log("Publish Player");
+                        // console.log(m);
                     }
                 });
             });
@@ -395,8 +395,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             channel: dealersTable.data._id,
             // connect: play,
             presence: function(m) {
-                console.log('Player Controller');
-                console.log(m);
+                // console.log('Player Controller');
+                // console.log(m);
                 // whosTurn
 
                 if (m.uuid === uuid && m.action === 'join') {
@@ -482,23 +482,33 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     console.log(m);
                     
                     var publishedTime = m.data.timestamp;
+                    console.log("m.data.timestamp");
+                    console.log(m.data.timestamp);
+
                     var endTime = moment(publishedTime).add((m.data.duration), 's');
+                    console.log("endTime");
+                    console.log(endTime);
+
                     var difference = moment().utc().diff(endTime, 'seconds');
+                   
                     console.log("difference in published time and players time");
                     console.log(difference);
+
                     var timerValue = Math.abs(difference);
                     if(m.data.flag == 'wait'){
                         // Disable all playing controls while we are waiting for other players to join
                         document.getElementById('bet').setAttribute('disabled', 'disabled');
                         document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
                         document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
-                        waitTimer(timerValue).startTimer(0);
+                        // waitTimer(timerValue).startTimer(0);
+                        waitTimer(m.data.duration).startTimer(0);
                     };
                     if(m.data.flag == 'startRound'){
                         if($scope.waitInterval){
                             clearInterval($scope.waitInterval);
                         }
-                        roundTimer(timerValue).startTimer(0);
+                        // roundTimer(timerValue).startTimer(0);
+                        roundTimer(m.data.duration).startTimer(0);
                         
                     };
                     if(m.data.flag == 'roundInProgress'){
@@ -549,7 +559,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 
                 // $scope.time.roundTime = seconds;
                 // publishToPlayer($scope.playersPrivateChannel, {time: $scope.time.roundTime, flag: 'RoundTime'});
-                console.log(seconds + ' | ' + duration);
+                // console.log(seconds + ' | ' + duration);
             }
             return {
                 startTimer: function (duration, flag) {
@@ -596,7 +606,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
                 // $scope.time.waitTime = seconds;
                 // publishToPlayer($scope.playersPrivateChannel, {time: seconds, flag: 'WaitTime'});
-                console.log(seconds + ' | ' + duration);
+                // console.log(seconds + ' | ' + duration);
             }
             return {
                 startTimer: function (duration, flag) {
@@ -671,8 +681,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         function checkGameStatus(player, el) {
             // moves += 1;
             
-            console.log('Score for player, ' + player );
-            console.log($scope.score );
+            // console.log('Score for player, ' + player );
+            // console.log($scope.score );
 
             if(player == userDetails._id){
                 $scope.score.Player.value = el;
