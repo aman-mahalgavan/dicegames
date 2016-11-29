@@ -329,9 +329,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
         // Get details of who the player has bet on, hide the modal explicitly and roll the player's dice
         $scope.placeBet = function(betAmount, betOn) {
-            document.getElementById('bet').setAttribute('disabled', 'disabled');
-            document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
-            document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
+            // document.getElementById('bet').setAttribute('disabled', 'disabled');
+            // document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
+            // document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
             if (betOn == 'me') {
                 $scope.gameWinner = $scope.userDetails._id;
             } else if (betOn == 'dealer') {
@@ -341,9 +341,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             $scope.rollDice(); // Roll dice when the player places a bet
 
             // Disable All Controls after the dice has been rolled
-            document.getElementById('bet').setAttribute('disabled', 'disabled');
-            document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
-            document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
+            // document.getElementById('bet').setAttribute('disabled', 'disabled');
+            // document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
+            // document.getElementById('increaseBet').setAttribute('disabled', 'disabled');
         };
 
         // Increase/Decrease the bet amount value
@@ -395,23 +395,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             channel: dealersTable.data._id,
             // connect: play,
             presence: function(m) {
-                // console.log('Player Controller');
-                // console.log(m);
-                // whosTurn
-
+                
                 if (m.uuid === uuid && m.action === 'join') {
-                    // if (m.occupancy < 2) {
-                    //     // whosTurn.textContent = 'Waiting for your opponent...';
-                    // } else if (m.occupancy === 2) {
-                    //     mySign = userDetails._id;
-                    // }
-                    // // else if (m.occupancy > 2) {
-                    // //     alert('This game already have two players!');
-                    // //     // tictactoe.className = 'disabled';
-                    // // }
-                    // if (m.occupancy === 2) {
-                        startNewGame();
-                    // }
+                    startNewGame();
                 }
                 document.getElementById('you').textContent = mySign;
             },
@@ -424,8 +410,41 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     dealersDiceContainer.innerHTML = m.dealersDice;
                 }
             	checkGameStatus(m.player, m.diceValue);
+                if(m.flag == 'playerResult'){
+                    // Display Dice and the amount won/lost in the round in the results container
+                    document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
+                    $scope.resultingDice.forEach(function(dice){
+                        document.getElementById('playersResults').innerHTML += dice;
+                    });
+                    document.getElementById('playersResults').innerHTML += m.data + '</div>';
+                }
             },
         });
+
+        function publishResultGlobally(channelName, player, result, playersDice){
+            console.log("Channel Name to publish global result => " , dealersTable.data._id);
+            pubnub.publish({
+                channel: dealersTable.data._id,
+                message: {
+                    flag: 'playerResult',
+                    data: result,
+                    player: player,
+                    dice: playersDice
+                },
+                callback: function(m) {
+                    console.log("Published On " + dealersTable.data._id);
+                    console.log("Published Message " + result);
+                    // $scope.score.Dealer['name'] = m.playerName;
+                    // $scope.score.Dealer['id'] = m.player;
+                    // $scope.score.Dealer['value'] = m.diceValue;
+                    // $scope.dealersDice = m.dealersDice;
+                    // if(m.dealersDice){
+                    //     dealersDiceContainer.innerHTML = m.dealersDice;
+                    // }
+                    // checkGameStatus(m.player, m.diceValue);
+                },
+            });
+        };
 
         function publishFoldMessage(channelName, player){
             pubnub.publish({
@@ -443,7 +462,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     // checkGameStatus(userDetails._id, diceValue);
                 }
             });
-        }
+        };
 
         // Publish Player's data on private channel which the dealer is subscribed to
         function publishPosition(player, position, status, diceValue, chosenDices, channelName, gameWinner, betAmount) {
@@ -549,7 +568,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     }else{
                         $scope.score.Player['value'] = 0;
                         resultContainer.innerHTML += "You Folded. Please Wait for the Next Round to start."
-                        document.getElementById('playersResults').innerHTML += '<div>' + userDetails.name + ' Folded.</div>';
+                        // document.getElementById('playersResults').innerHTML += '<div>' + userDetails.name + ' Folded.</div>';
                         publishFoldMessage(userDetails._id, userDetails);
                     };
                 }else{
@@ -614,6 +633,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 startTimer: function (duration, flag) {
                     $scope.resultingDice = [];
                     $('#diceResults').html('');
+                    startNewGame();
                     if($scope.dealersDice){
                         dealersDiceContainer.innerHTML = $scope.dealersDice;
                     }
@@ -698,11 +718,12 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 // alert(win($scope.score));
                 
                 // Display Dice and the amount won/lost in the round in the results container
-                document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
-                $scope.resultingDice.forEach(function(dice){
-                    document.getElementById('playersResults').innerHTML += dice;
-                });
-                document.getElementById('playersResults').innerHTML += win($scope.score) + '</div>';
+                // document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
+                // $scope.resultingDice.forEach(function(dice){
+                //     document.getElementById('playersResults').innerHTML += dice;
+                // });
+                // document.getElementById('playersResults').innerHTML += win($scope.score) + '</div>';
+                publishResultGlobally('channelName', player, win($scope.score), $scope.resultingDice);
                 document.getElementById('bet').disabled = false;
                 // Reset scores when a round is over and somebody has won the round
                 // startNewGame();

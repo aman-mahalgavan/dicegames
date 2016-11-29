@@ -178,8 +178,9 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="btn-group col-sm-12" role="group" style="margin-bottom:20px;padding:0;">
-                        <button type="button" class="btn col-sm-6" style="border:1px solid #fff;" ng-click="background={'background-color':'blue','color':'#fff'};style={'background-color': 'rgb(221,221,221)','color':'#000'}"" ng-style="background"  ng-model="betOptions" value="me">I'll Win</button>
-                        <button type="button" class="btn col-sm-6" style="border:1px solid #fff;" ng-click="style={'background-color':'blue','color':'#fff'};background={'background-color': 'rgb(221,221,221)','color':'#000'}"" ng-style="style" ng-model="betOptions" value="dealer">Dealer Will Win</button>
+                        <button type="button" class="btn col-sm-6" style="border:1px solid #fff;" ng-click="background={'background-color':'blue','color':'#fff'};style={'background-color': 'rgb(221,221,221)','color':'#000'};betOptions='me'" ng-style="background"  ng-model="betOptions" value="me">I'll Win</button>
+                        <button type="button" class="btn col-sm-6" style="border:1px solid #fff;" ng-click="style={'background-color':'blue','color':'#fff'};background={'background-color': 'rgb(221,221,221)','color':'#000'};betOptions='dealer'" ng-style="style" ng-model="betOptions" value="dealer">Dealer Will Win</button>
+                        {{betOptions}}
                     </div>
                     
                     <!-- <form class="form">
@@ -212,7 +213,8 @@
             </div>
             <div class="modal-footer" style="border-top:none;text-align:center;">
                 <div>
-                    <button id="placeBet" type="button" class="btn btn-danger" ng-disabled="!betOptions" ng-click="placeBet(betAmount, betOptions);" style="width:100%;">Place Bet</button>
+                    <!--  ng-disabled="!betOptions" -->
+                    <button id="placeBet" type="button" class="btn btn-danger" ng-click="placeBet(betAmount, betOptions);" style="width:100%;">Place Bet</button>
                 </div>
                 <a type="button" data-dismiss="modal" style="font-size:14px;cursor:pointer;">Skip Round</a>
             </div>

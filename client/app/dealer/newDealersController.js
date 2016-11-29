@@ -381,6 +381,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
         // Subscribe to a public channel where players will publish their ID's only
         (function(){
+            // console.log('channel to publish global result => ', dealersTable.data.Dealer._id);
             pubnub.subscribe({
                 channel: dealersTable.data.Dealer._id,
                 connect: startNewGame,
@@ -389,15 +390,63 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // console.log(m);
                 },
                 callback: function(m){
-                    // console.log("Players will publish their ID's here - callback");
-                    // console.log(m);
-                    m.player = JSON.parse(m.player);
-                    // m.player['playing'] = true;
-                    collectPlayers(m);
-                    // subscribeToPlayersChannel(m.player._id);
+                    console.log("Players will publish their ID's here Or publish Results- callback");
+                    console.log(m);
+                    if(m.flag == 'playerResult'){
+                        alert(m);
+                    }else{
+                        m.player = JSON.parse(m.player);
+                        // m.player['playing'] = true;
+                        collectPlayers(m);
+                        subscribeToPublicChannel();            
+
+                        // subscribeToPlayersChannel(m.player._id);
+                    }
                 }
             });
         })();
+
+        function subscribeToPublicChannel(){
+            console.log('channel to publish global result => ', dealersTable.data.Dealer._id);
+            pubnub.subscribe({
+                channel: dealersTable.data._id,
+                // connect: startNewGame,
+                presence: function(m){
+                    // console.log("Players will publish their ID's here - presence");
+                    // console.log(m);
+                },
+                callback: function(m){
+                    console.log("Players will publish their ID's here Or publish Results- callback");
+                    console.log(m);
+                    if(m.flag == 'playerResult'){
+                        // Display Dice and the amount won/lost in the round in the results container
+                        document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
+                        m.dice.forEach(function(dice){
+                            document.getElementById('playersResults').innerHTML += dice;
+                        });
+                        document.getElementById('playersResults').innerHTML += m.data + '</div>';
+
+                        // Reset scores when a round is over and somebody has won the round
+                        setTimeout(function(){
+                            startNewGame();
+                            pubnub.time(function(time){
+                                // Convert pubnub timeToken to IST --> 
+                                var pubnubTime = new Date(time/1e4);
+                                // console.log("Dealer publishing the PubNub time to the player - Wait Time");
+                                // console.log(pubnubTime);
+                                
+                                // start the wait timer for the next round after 5 seconds
+                                // Publish the Wait Time to all the players playing the game and start the timer for the dealer
+                                $scope.playersInRound.forEach(function(item){
+                                    publishToPlayer(item._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+                                });
+                                waitTimer(10).startTimer(0);
+                            });
+                        }, 5000);
+                    }
+                }
+            });
+        };
 
         // Subscribe & Publish to player's channels. 
         // This is a private channel between the dealer and the player.
@@ -451,7 +500,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     //     // $scope.timer = 20;
                     //     publishToPlayer(channel, "Please Wait for this round to finish!");
                     // }
-                    checkGameStatus(m.player, m.diceValue, $scope.betAmount);
+                    // checkGameStatus(m.player, m.diceValue, $scope.betAmount);
                 }
             }); 
         };
@@ -464,8 +513,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     data: data
                 },
                 callback: function(m) {
-                    console.log("Dealer Publishes to a single player");
-                    console.log(m);
+                    // console.log("Dealer Publishes to a single player");
+                    // console.log(m);
                 }
             });
         };
@@ -485,12 +534,12 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     dealersDice: chosenDice
                 },
                 callback: function(m) {
-                    console.log("Publish Dealer");
-                    console.log(m);
+                    // console.log("Publish Dealer");
+                    // console.log(m);
                     // if(m.diceValue > 0){
                     //     checkGameStatus(m.player, m.diceValue);    
                     // }
-                    checkGameStatus(dealer, diceValue);    
+                    // checkGameStatus(dealer, diceValue);   
                 }
             });                
         };
@@ -579,7 +628,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 });
 
             }
-            console.log("Players In Round", $scope.playersInRound);
+            // console.log("Players In Round", $scope.playersInRound);
         };
 
         function startRound(){
@@ -687,6 +736,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             return {
                 startTimer: function (duration, flag) {
                     $scope.roundStarted = false;
+                    startNewGame();
                     var time = duration;
                     clearInterval(waitInterval);
                     waitInterval = setInterval(function () {
@@ -767,30 +817,23 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             if (win($scope.score)) {
                 // alert(win($scope.score));
                 
-                // Display Dice and the amount won/lost in the round in the results container
-                document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
-                 $scope.playersDice.forEach(function(dice){
-                    document.getElementById('playersResults').innerHTML += dice;
-                });
-                document.getElementById('playersResults').innerHTML += win($scope.score) + '</div>';
-
-                // Reset scores when a round is over and somebody has won the round
-                setTimeout(function(){
-                    startNewGame();
-                    pubnub.time(function(time){
-                        // Convert pubnub timeToken to IST --> 
-                        var pubnubTime = new Date(time/1e4);
-                        // console.log("Dealer publishing the PubNub time to the player - Wait Time");
-                        // console.log(pubnubTime);
+                // // Reset scores when a round is over and somebody has won the round
+                // setTimeout(function(){
+                //     startNewGame();
+                //     pubnub.time(function(time){
+                //         // Convert pubnub timeToken to IST --> 
+                //         var pubnubTime = new Date(time/1e4);
+                //         // console.log("Dealer publishing the PubNub time to the player - Wait Time");
+                //         // console.log(pubnubTime);
                         
-                        // start the wait timer for the next round after 5 seconds
-                        // Publish the Wait Time to all the players playing the game and start the timer for the dealer
-                        $scope.playersInRound.forEach(function(item){
-                            publishToPlayer(item._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
-                        });
-                        waitTimer(10).startTimer(0);
-                    });
-                }, 5000);
+                //         // start the wait timer for the next round after 5 seconds
+                //         // Publish the Wait Time to all the players playing the game and start the timer for the dealer
+                //         $scope.playersInRound.forEach(function(item){
+                //             publishToPlayer(item._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
+                //         });
+                //         waitTimer(10).startTimer(0);
+                //     });
+                // }, 5000);
             } 
 
             else {
