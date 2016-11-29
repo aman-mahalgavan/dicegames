@@ -149,18 +149,10 @@
         <!-- <h4>YOUR CHOICE</h4> -->
         <!-- <button class="btn btn-default" disabled>FOLD</button> -->
         <!-- <button class="btn btn-default playBetBtn" disabled>PLAY $25</button> -->
-        <div class="col-md-6" style="padding:0;">
-            <div class="input-group">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" id="decreaseBet" type="button" ng-click="changeBetAmt('decrease', betAmount)">-</button>
-                </span>
-                <input type="number" class="form-control betAmount" ng-min="betAmount" ng-init="betAmount" ng-model="betAmount">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" id="increaseBet" type="button" ng-click="changeBetAmt('increase', betAmount)">+</button>
-                </span>
-            </div>
-        </div>
-        <div class="col-md-3" style="padding:0;">
+       <!--  <div class="col-md-6" style="padding:0;">
+            
+        </div> -->
+        <div class="col-md-9" style="padding:0;">
             <button id="bet" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="width:100%;">Bet</button>
         </div>
         <!-- <div class="col-md-3" style="padding:0;">
@@ -185,7 +177,12 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <form class="form">
+                    <div class="btn-group col-sm-12" role="group" style="margin-bottom:20px;padding:0;">
+                        <button type="button" class="btn col-sm-6" style="border:1px solid #fff;" ng-click="background={'background-color':'blue','color':'#fff'};style={'background-color': 'rgb(221,221,221)','color':'#000'}"" ng-style="background"  ng-model="betOptions" value="me">I'll Win</button>
+                        <button type="button" class="btn col-sm-6" style="border:1px solid #fff;" ng-click="style={'background-color':'blue','color':'#fff'};background={'background-color': 'rgb(221,221,221)','color':'#000'}"" ng-style="style" ng-model="betOptions" value="dealer">Dealer Will Win</button>
+                    </div>
+                    
+                    <!-- <form class="form">
                         <div class="radio">
                             <label>
                                 <input type="radio" name="betOptions" id="betOptions" ng-model="betOptions" value="dealer" checked> Dealer will win.
@@ -196,14 +193,28 @@
                                 <input type="radio" name="betOptions" id="betOptions" ng-model="betOptions" value="me" checked> I will win.
                             </label>
                         </div>
-                        <!--  <input type="radio" name="betOn" ng-model="placeBetOn" value="dealer">Dealer
-                <input type="radio" name="betOn" ng-model="placeBetOn" value="me">Me -->
-                    </form>
+                         <input type="radio" name="betOn" ng-model="placeBetOn" value="dealer">Dealer
+                        <input type="radio" name="betOn" ng-model="placeBetOn" value="me">Me
+                    </form> -->
                 </div>
+                <div class="row">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="decreaseBet" type="button" ng-click="changeBetAmt('decrease', betAmount)">-1</button>
+                        </span>
+                        <input type="number" class="form-control betAmount" ng-min="betAmount" ng-init="betAmount" ng-model="betAmount" style="height: 50px;margin: 0 10px 0 10px;width: 96%;border-radius: 0;">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" id="increaseBet" type="button" ng-click="changeBetAmt('increase', betAmount)">+1</button>
+                        </span>
+                    </div>
+                </div>
+                
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button id="placeBet" type="button" class="btn btn-primary" ng-disabled="!betOptions" ng-click="placeBet(betAmount, betOptions);">Place Bet</button>
+            <div class="modal-footer" style="border-top:none;text-align:center;">
+                <div>
+                    <button id="placeBet" type="button" class="btn btn-danger" ng-disabled="!betOptions" ng-click="placeBet(betAmount, betOptions);" style="width:100%;">Place Bet</button>
+                </div>
+                <a type="button" data-dismiss="modal" style="font-size:14px;cursor:pointer;">Skip Round</a>
             </div>
         </div>
     </div>

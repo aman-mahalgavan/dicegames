@@ -288,7 +288,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         var diceArray = [];
         diceArray.push(diceOne, diceTwo, diceThree, diceFour, diceFive, diceSix);
 
-        // Set up Game Gequirements
+        // Set up Game Requirements
         var gameid = dealersTable.data._id;
 		var channel = 'dicegames-' + gameid;
 		var uuid = JSON.stringify(userDetails);
@@ -420,7 +420,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 $scope.score.Dealer['id'] = m.player;
                 $scope.score.Dealer['value'] = m.diceValue;
                 $scope.dealersDice = m.dealersDice;
-                dealersDiceContainer.innerHTML = m.dealersDice;
+                if(m.dealersDice){
+                    dealersDiceContainer.innerHTML = m.dealersDice;
+                }
             	checkGameStatus(m.player, m.diceValue);
             },
         });
@@ -612,7 +614,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 startTimer: function (duration, flag) {
                     $scope.resultingDice = [];
                     $('#diceResults').html('');
-                    dealersDiceContainer.innerHTML = $scope.dealersDice;
+                    if($scope.dealersDice){
+                        dealersDiceContainer.innerHTML = $scope.dealersDice;
+                    }
                     var time = duration;
                     clearInterval($scope.waitInterval);
                     $scope.waitInterval = setInterval(function () {

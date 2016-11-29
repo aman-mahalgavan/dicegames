@@ -343,7 +343,12 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         var diceSix = '<img data-diceValue="6" src="../../assets/images/diceSix.png" style="margin-right:10px;">';
 
         var diceArray = [];
-        diceArray.push(diceOne, diceTwo, diceThree, diceFour, diceFive, diceSix);
+        diceArray.push(diceOne);
+        diceArray.push(diceTwo);
+        diceArray.push(diceThree);
+        diceArray.push(diceFour);
+        diceArray.push(diceFive);
+        diceArray.push(diceSix);
 
         // Set up Game Requirements
         var gameid = dealersTable.data._id;
@@ -418,9 +423,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                         $scope.betAmount = m.betAmt;
                         $scope.playersDice = m.dice;
                     }else if(m.flag == 'Player Folded'){
-                        // console.log(m.playerName + 'Folded.');
-                        document.getElementById('playersResults').innerHTML +=  '<div>' + m.playerName + ' Folded.</div>';
-                        // resultContainer.innerHTML += '<div>' + m.playerName + 'Folded.</div>';
+                        // Display that the player has folded
+                        // document.getElementById('playersResults').innerHTML +=  '<div>' + m.playerName + ' Folded.</div>';
 
                         // Reset scores when a round is over and somebody has folded the round
                         setTimeout(function(){
