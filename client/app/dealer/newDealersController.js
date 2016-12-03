@@ -275,9 +275,10 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 if (userAttr.user != userDetails.name) {
                     userAttr.user = '@' + userAttr.user;
                 }
-                box.innerHTML = "<div class='chatElement' style='border-left:5px solid " + userAttr.chatBadgeColor + "'><div class='username'>" + userAttr.user + "</div>" + ('' + userAttr.message).replace(/[<>]/g, '') + '</div><br>' + box.innerHTML
+                box.innerHTML = "<div class='chatElement' style='display:block;width:96%;border-left:5px solid " + userAttr.chatBadgeColor + "'><div class='username'>" + userAttr.user + "</div>" + ('' + userAttr.message).replace(/[<>]/g, '') + '</div><br>' + box.innerHTML;
                     // box.innerHTML = "<div class='chatElement'>" + (''+text).replace( /[<>]/g, '' ) + '</div><br>' + box.innerHTML
-
+                $('#box').reverseChildren();
+                $("#box").scrollTop($("#box")[0].scrollHeight + 10);
             },
             presence: function(m) {
                 // console.log("Presence ==> ");
@@ -300,9 +301,19 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 // console.log(m)
                     // m['user'] = $state.params.tableName;
                     // userName = m.user;
-            }
+                    
+                    
+                }
         });
     };
+
+    $.fn.reverseChildren = function() {
+      return this.each(function(){
+        var $this = $(this);
+        $this.children().each(function(){ $this.prepend(this) });
+      });
+    };
+    
 
 
 
@@ -864,5 +875,17 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         };
 
     };
+
+    var scrolled = false;
+    function updateScroll(){
+        if(!scrolled){
+            var element = document.getElementById("box");
+            element.scrollTop = element.scrollHeight;
+        }
+    }
+
+    $("#box").on('scroll', function(){
+        scrolled=true;
+    });
 
 });

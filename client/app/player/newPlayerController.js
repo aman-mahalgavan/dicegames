@@ -227,8 +227,10 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 if (userAttr.user != userDetails.name) {
                     userAttr.user = '@' + userAttr.user;
                 }
-                box.innerHTML = "<div class='chatElement' style='border-left:5px solid " + userAttr.chatBadgeColor + "'><div class='username'>" + userAttr.user + "</div>" + ('' + userAttr.message).replace(/[<>]/g, '') + '</div><br>' + box.innerHTML
+                box.innerHTML = "<div class='chatElement' style='display:block;width:96%;border-left:5px solid " + userAttr.chatBadgeColor + "'><div class='username'>" + userAttr.user + "</div>" + ('' + userAttr.message).replace(/[<>]/g, '') + '</div><br>' + box.innerHTML;
                     // box.innerHTML = "<div class='chatElement'>" + (''+userDetails.message).replace( /[<>]/g, '' ) + '</div><br>' + box.innerHTML
+                    $('#box').reverseChildren();
+                    $("#box").scrollTop($("#box")[0].scrollHeight + 10);
             }
         });
         pubnub.bind('keyup', input, function(e) {
@@ -246,8 +248,19 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     // m['user'] = $state.params.username;
                     // m['chatBadgeColor'] = chatBadgeColor;
                     // hostName = m.user;
+                    
             }
         });
+    };
+
+    // Reverse Chat messages UI
+    $.fn.reverseChildren = function() {
+      return this.each(function(){
+        var $this = $(this);
+        $this.children().each(function(){
+          $this.prepend(this);
+        });
+      });
     };
 
     // Game Logic =>
@@ -744,5 +757,17 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         }
 
     };
+
+    var scrolled = false;
+    function updateScroll(){
+        if(!scrolled){
+            var element = document.getElementById("yourDivID");
+            element.scrollTop = element.scrollHeight;
+        }
+    }
+
+    $("#yourDivID").on('scroll', function(){
+        scrolled=true;
+    });
 
 });
