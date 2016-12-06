@@ -404,7 +404,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     console.log("Players will publish their ID's here Or publish Results- callback");
                     console.log(m);
                     if(m.flag == 'playerResult'){
-                        alert(m);
+                        // alert(m);
                     }else{
                         m.player = JSON.parse(m.player);
                         // m.player['playing'] = true;
@@ -454,6 +454,12 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                                 waitTimer(10).startTimer(0);
                             });
                         }, 5000);
+                    }
+                    if(m.flag == 'playersBet'){
+                        console.log("Players Bet Amount");
+                        console.log(m);
+                        document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">';
+                        document.getElementById('playersResults').innerHTML += m.player.name + ' has bet $' + m.data;
                     }
                 }
             });

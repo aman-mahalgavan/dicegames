@@ -352,7 +352,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             }
             $('#myModal').modal('hide');
             $scope.rollDice(); // Roll dice when the player places a bet
-
+            publishResultGlobally('channelName', userDetails, $scope.betAmount, null, 'playersBet');
             // Disable All Controls after the dice has been rolled
             // document.getElementById('bet').setAttribute('disabled', 'disabled');
             // document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
@@ -431,15 +431,20 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     });
                     document.getElementById('playersResults').innerHTML += m.data + '</div>';
                 }
+                if(m.flag == 'playersBet'){
+                    document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">' + m.player.name + ' has bet $';
+    
+                    document.getElementById('playersResults').innerHTML += m.data + '</div>';
+                }
             },
         });
 
-        function publishResultGlobally(channelName, player, result, playersDice){
+        function publishResultGlobally(channelName, player, result, playersDice, flag){
             console.log("Channel Name to publish global result => " , dealersTable.data._id);
             pubnub.publish({
                 channel: dealersTable.data._id,
                 message: {
-                    flag: 'playerResult',
+                    flag: flag,
                     data: result,
                     player: player,
                     dice: playersDice
@@ -736,7 +741,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 //     document.getElementById('playersResults').innerHTML += dice;
                 // });
                 // document.getElementById('playersResults').innerHTML += win($scope.score) + '</div>';
-                publishResultGlobally('channelName', player, win($scope.score), $scope.resultingDice);
+                publishResultGlobally('channelName', player, win($scope.score), $scope.resultingDice, 'playerResult');
                 document.getElementById('bet').disabled = false;
                 // Reset scores when a round is over and somebody has won the round
                 // startNewGame();
