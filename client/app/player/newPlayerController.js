@@ -298,9 +298,15 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         var diceFive = '<img data-diceValue="5" src="../../assets/images/diceFive.png" style="margin-right:10px;">';
         var diceSix = '<img data-diceValue="6" src="../../assets/images/diceSix.png" style="margin-right:10px;">';
 
+        // var diceArray = [];
+        // diceArray.push(diceOne, diceTwo, diceThree, diceFour, diceFive, diceSix);
         var diceArray = [];
-        diceArray.push(diceOne, diceTwo, diceThree, diceFour, diceFive, diceSix);
-
+        diceArray.push(diceOne);
+        diceArray.push(diceTwo);
+        diceArray.push(diceThree);
+        diceArray.push(diceFour);
+        diceArray.push(diceFive);
+        diceArray.push(diceSix);
         // Set up Game Requirements
         var gameid = dealersTable.data._id;
 		var channel = 'dicegames-' + gameid;
@@ -426,7 +432,10 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 if(m.flag == 'playerResult'){
                     // Display Dice and the amount won/lost in the round in the results container
                     document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
-                    $scope.resultingDice.forEach(function(dice){
+                    // $scope.resultingDice.forEach(function(dice){
+                    //     document.getElementById('playersResults').innerHTML += dice;
+                    // });
+                    m.dice.forEach(function(dice){
                         document.getElementById('playersResults').innerHTML += dice;
                     });
                     document.getElementById('playersResults').innerHTML += m.data + '</div>';
@@ -440,7 +449,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         });
 
         function publishResultGlobally(channelName, player, result, playersDice, flag){
-            console.log("Channel Name to publish global result => " , dealersTable.data._id);
+            // console.log("Channel Name to publish global result => " , dealersTable.data._id);
             pubnub.publish({
                 channel: dealersTable.data._id,
                 message: {
@@ -450,7 +459,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     dice: playersDice
                 },
                 callback: function(m) {
-                    console.log("Published On " + dealersTable.data._id);
+                    // console.log("Published On " + dealersTable.data._id);
                     console.log("Published Message " + result);
                     // $scope.score.Dealer['name'] = m.playerName;
                     // $scope.score.Dealer['id'] = m.player;
@@ -517,22 +526,13 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             },
             callback: function(m) {
                 if(m.data){
-                    console.log("Data from Dealer on Player's Private channel - Callback");
-                    console.log(m);
+                    // console.log("Data from Dealer on Player's Private channel - Callback");
+                    // console.log(m);
                     
                     var publishedTime = m.data.timestamp;
-                    console.log("m.data.timestamp");
-                    console.log(m.data.timestamp);
-
                     var endTime = moment(publishedTime).add((m.data.duration), 's');
-                    console.log("endTime");
-                    console.log(endTime);
-
                     var difference = moment().utc().diff(endTime, 'seconds');
                    
-                    console.log("difference in published time and players time");
-                    console.log(difference);
-
                     var timerValue = Math.abs(difference);
                     if(m.data.flag == 'wait'){
                         // Disable all playing controls while we are waiting for other players to join
