@@ -97,7 +97,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         }
         $http.post('/api/tables/removeTable', { tableId: tableID }).success(function(response) {
             console.log("Table Removed");
-            alert('Table Removed');
+            // alert('Table Removed');
         }).error(function(err) {
             console.log("Error Removing the Table");
             console.log(err);
@@ -625,7 +625,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 });
             };
              if($scope.roundStarted){
-                alert('roundInProgress (collctPlayers Function)', JSON.stringify($scope.playersInRound));
+                // alert('roundInProgress (collctPlayers Function)', JSON.stringify($scope.playersInRound));
                 console.log("$scope.playersInRound when round is started", $scope.playersInRound);
                 publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: 0, timestamp: null, timeString: null});                            
             };
@@ -649,7 +649,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     
                 });
             }
-            alert("$scope.playersInRound.length", JSON.stringify($scope.playersInRound));
+            // alert("$scope.playersInRound.length", JSON.stringify($scope.playersInRound));
             if($scope.playersInRound.length > 1){ // if more than 1 player have joined the game
                 pubnub.time(function(time){
 
@@ -661,7 +661,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // Disable all playing controls while we are waiting for other players to join
                     // document.getElementById('rollDice').setAttribute('disabled', 'disabled');
                     console.log("$scope.roundStarted", $scope.roundStarted);
-                    alert($scope.roundStarted);
+                    // alert($scope.roundStarted);
                     // if($scope.roundStarted){
                     //     alert('roundInProgress');
                     //     // publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: $scope.waitTimer, timestamp: pubnubTime, timeString: time});                            
@@ -669,10 +669,10 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // }else{
                         // Publish the Wait Time to all the players playing the game and start the timer for the dealer
                         if($scope.waitTimer != 0){
-                            alert('waiting');
+                            // alert('waiting');
                             publishToPlayer(data.player._id, {flag: 'wait', duration: $scope.waitTimer, timestamp: pubnubTime, timeString: time});    
                         }else{
-                            alert('Start Wait timer');
+                            // alert('Start Wait timer');
                            publishToPlayer(data.player._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
                            waitTimer(10).startTimer(0);
                         }    

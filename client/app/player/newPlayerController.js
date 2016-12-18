@@ -554,7 +554,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         
                     };
                     if(m.data.flag == 'roundInProgress'){
-                        alert("Round in Progress");
+                        // alert("Round in Progress");
                         display.textContent = 'Round In Progress. Please wait for the next round to begin.';
                     }
 
