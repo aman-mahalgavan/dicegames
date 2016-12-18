@@ -90,7 +90,7 @@ var CONTROLLER = window.CONTROLLER = function(phone){
             channel    : ch,
             message    : streamreceivecb,
             presence   : streamprescb,
-            connect    : function() { stream_name = ch; console.log("Streaming channel " + ch); }
+            connect    : function() { stream_name = ch; /*console.log("Streaming channel " + ch);*/ }
         });
     }
     
@@ -120,7 +120,7 @@ var CONTROLLER = window.CONTROLLER = function(phone){
 		pubnub.publish({ 
 			channel: stream_name,
 			message: msg,
-			callback : function(m){console.log(m)}
+			callback : function(m){/*console.log(m)*/}
 		});
     }
     

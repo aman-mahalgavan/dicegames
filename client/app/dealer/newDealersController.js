@@ -427,7 +427,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 }
             });
         })();
-
+        $scope.publishResultCounter = 0;
         function subscribeToPublicChannel(){
             console.log('channel to publish global result => ', dealersTable.data.Dealer._id);
             pubnub.subscribe({
@@ -441,13 +441,19 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     console.log("Players will publish their ID's here Or publish Results- callback");
                     console.log(m);
                     if(m.flag == 'playerResult'){
-                        // Display Dice and the amount won/lost in the round in the results container
-                        document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
-                        m.dice.forEach(function(dice){
-                            document.getElementById('playersResults').innerHTML += dice;
-                        });
-                        document.getElementById('playersResults').innerHTML += m.data + '</div>';
+                        if($scope.publishResultCounter == 0){                        
+                            // Display Dice and the amount won/lost in the round in the results container
+                            document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
+                            m.dice.forEach(function(dice){
+                                document.getElementById('playersResults').innerHTML += dice;
+                            });
+                            document.getElementById('playersResults').innerHTML += m.data + '</div>';
 
+                            $scope.playersInRound = angular.copy($scope.playersInGame);
+                            // $scope.playersInGame = [];
+                            $scope.publishResultCounter = 1;
+                            console.log("Number of players Starting new round after results ", $scope.playersInRound);
+                        }
                         // Reset scores when a round is over and somebody has won the round
                         setTimeout(function(){
                             startNewGame();
@@ -457,11 +463,13 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                                 // console.log("Dealer publishing the PubNub time to the player - Wait Time");
                                 // console.log(pubnubTime);
                                 
+
                                 // start the wait timer for the next round after 5 seconds
                                 // Publish the Wait Time to all the players playing the game and start the timer for the dealer
                                 $scope.playersInRound.forEach(function(item){
                                     publishToPlayer(item._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
                                 });
+                                $scope.publishResultCounter = 0;
                                 waitTimer(10).startTimer(0);
                             });
                         }, 5000);
@@ -478,10 +486,12 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
 
         // Subscribe & Publish to player's channels. 
         // This is a private channel between the dealer and the player.
+        $scope.playersPrivateChannel = [];
         function subscribeToPlayersChannel(channel){
-            $scope.playersPrivateChannel = channel;
+            $scope.playersPrivateChannel.push(JSON.stringify(channel));
             // console.log('playersPrivateChannel');
-            // console.log($scope.playersPrivateChannel);
+            console.log("$scope.playersPrivateChannel =============================================== >>>>>>>>>");
+            console.log($scope.playersPrivateChannel);
             pubnub.subscribe({
                 channel: channel,
                 presence: function(m){
@@ -492,6 +502,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // console.log("Dealer's subscribeToPlayersChannel - callback");
                     // console.log(m);
                     // if(m.player && m.playerName && m.diceValue && m.betOn){
+                    $scope.playersInRound = angular.copy($scope.playersInGame);
+                    // $scope.playersInGame = [];
                     if(m.player && m.playerName && m.diceValue){
                         $scope.score.Player['id'] = m.player;
                         $scope.score.Player['name'] = m.playerName;
@@ -599,7 +611,10 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             if(!$scope.roundStarted){
                 // data.player['playing'] = true;
                 // $scope.playersInRound = [];
+                
                 $scope.playersInRound = angular.copy($scope.playersInGame);
+                // $scope.playersInGame = [];
+                console.log("$scope.playersInRound when round is not started", $scope.playersInRound);
                 // $scope.playersInGame.forEach(function(item){
                 //     // item['playing'] = true;
                 //     $scope.playersInRound.push(item);
@@ -608,9 +623,14 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // alert('Subscribed to ' + item._id);
                     subscribeToPlayersChannel(item._id);
                 });
-            }
+            };
+             if($scope.roundStarted){
+                alert('roundInProgress (collctPlayers Function)', JSON.stringify($scope.playersInRound));
+                console.log("$scope.playersInRound when round is started", $scope.playersInRound);
+                publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: 0, timestamp: null, timeString: null});                            
+            };
             // Start the game when the 1st player joins the dealer and start the wait time for both the dealer and the player.
-            if($scope.playersInRound.length == 1){ // if a single player has joined the game
+            if($scope.playersInRound.length == 1 && !$scope.roundStarted){ // if a single player has joined the game
                 pubnub.time(function(time){
                     // console.log("TIME PUBNUB");
                     // console.log(time);
@@ -629,7 +649,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     
                 });
             }
-            alert("$scope.playersInRound.length", $scope.playersInRound.length);
+            alert("$scope.playersInRound.length", JSON.stringify($scope.playersInRound));
             if($scope.playersInRound.length > 1){ // if more than 1 player have joined the game
                 pubnub.time(function(time){
 
@@ -642,11 +662,11 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // document.getElementById('rollDice').setAttribute('disabled', 'disabled');
                     console.log("$scope.roundStarted", $scope.roundStarted);
                     alert($scope.roundStarted);
-                    if($scope.roundStarted){
-                        alert('roundInProgress');
-                        // publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: $scope.waitTimer, timestamp: pubnubTime, timeString: time});                            
-                        publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: 0, timestamp: pubnubTime, timeString: time});                            
-                    }else{
+                    // if($scope.roundStarted){
+                    //     alert('roundInProgress');
+                    //     // publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: $scope.waitTimer, timestamp: pubnubTime, timeString: time});                            
+                    //     publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: 0, timestamp: pubnubTime, timeString: time});                            
+                    // }else{
                         // Publish the Wait Time to all the players playing the game and start the timer for the dealer
                         if($scope.waitTimer != 0){
                             alert('waiting');
@@ -656,7 +676,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                            publishToPlayer(data.player._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
                            waitTimer(10).startTimer(0);
                         }    
-                    }
+                    // }
                     
                     
                 });
@@ -713,6 +733,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     $scope.roundTimer = seconds;
                     clearInterval(roundInterval);
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
+                    // $scope.playersInRound = angular.copy($scope.playersInGame);
+                    // $scope.playersInGame = [];
                     rollDiceOnce();
 
                 }else{

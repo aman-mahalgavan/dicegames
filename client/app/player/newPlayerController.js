@@ -535,6 +535,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                    
                     var timerValue = Math.abs(difference);
                     if(m.data.flag == 'wait'){
+                        console.log("Wait Round");
+
                         // Disable all playing controls while we are waiting for other players to join
                         document.getElementById('bet').setAttribute('disabled', 'disabled');
                         document.getElementById('decreaseBet').setAttribute('disabled', 'disabled');
@@ -543,6 +545,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         waitTimer(m.data.duration).startTimer(0);
                     };
                     if(m.data.flag == 'startRound'){
+                        console.log("Start Round");
                         if($scope.waitInterval){
                             clearInterval($scope.waitInterval);
                         }
@@ -551,6 +554,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         
                     };
                     if(m.data.flag == 'roundInProgress'){
+                        alert("Round in Progress");
                         display.textContent = 'Round In Progress. Please wait for the next round to begin.';
                     }
 
