@@ -718,7 +718,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         var roundTimer = function (seconds) {
             var seconds = seconds; 
             var tens = 00; 
-            var roundInterval;
+            $scope.roundInterval;
 
             function startCounter (duration) {
                 
@@ -731,7 +731,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 }
                 if(seconds == duration){
                     $scope.roundTimer = seconds;
-                    clearInterval(roundInterval);
+                    clearInterval($scope.roundInterval);
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
                     // $scope.playersInRound = angular.copy($scope.playersInGame);
                     // $scope.playersInGame = [];
@@ -752,8 +752,11 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 startTimer: function (duration, flag) {
                     $scope.roundStarted = true;
                     var time = duration;
-                    clearInterval(roundInterval);
-                    roundInterval = setInterval(function () {
+                    if($scope.waitInterval){
+                        clearInterval($scope.waitInterval);
+                    }
+                    clearInterval($scope.roundInterval);
+                    $scope.roundInterval = setInterval(function () {
                         startCounter(time, flag);
                     }, 30);
                 }
@@ -763,7 +766,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         var waitTimer = function (seconds) {
             var seconds = seconds; 
             var tens = 00; 
-            var waitInterval;
+            $scope.waitInterval;
 
             function startCounter (duration) {
                 
@@ -776,7 +779,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 }
                 if(seconds == duration){
                     $scope.waitTimer = seconds;
-                    clearInterval(waitInterval);
+                    clearInterval($scope.waitInterval);
                     display.textContent = 'Next Round will Start in ' + seconds + ' Seconds.';
                     startRound();
                     
@@ -795,8 +798,11 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     $scope.roundStarted = false;
                     startNewGame();
                     var time = duration;
-                    clearInterval(waitInterval);
-                    waitInterval = setInterval(function () {
+                    if($scope.roundInterval){
+                        clearInterval($scope.roundInterval);
+                    }
+                    clearInterval($scope.waitInterval);
+                    $scope.waitInterval = setInterval(function () {
                         startCounter(time, flag);
                     }, 30);
                 }
