@@ -441,7 +441,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     console.log("Players will publish their ID's here Or publish Results- callback");
                     console.log(m);
                     if(m.flag == 'playerResult'){
-                        if($scope.publishResultCounter == 0){                        
+                        // if($scope.publishResultCounter == 0){                        
                             // Display Dice and the amount won/lost in the round in the results container
                             document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">'
                             m.dice.forEach(function(dice){
@@ -453,7 +453,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                             // $scope.playersInGame = [];
                             $scope.publishResultCounter = 1;
                             console.log("Number of players Starting new round after results ", $scope.playersInRound);
-                        }
+                        // }
                         // Reset scores when a round is over and somebody has won the round
                         setTimeout(function(){
                             startNewGame();
@@ -469,7 +469,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                                 $scope.playersInRound.forEach(function(item){
                                     publishToPlayer(item._id, {flag: 'wait', duration: 10, timestamp: pubnubTime, timeString: time});
                                 });
-                                $scope.publishResultCounter = 0;
+                                // $scope.publishResultCounter = 0;
                                 waitTimer(10).startTimer(0);
                             });
                         }, 5000);
@@ -894,7 +894,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             } 
 
             else {
-                turn = (turn === dealersTable.data.Dealer._id) ? userDetails._id : dealersTable.data.Dealer._id;
+                // turn = (turn === dealersTable.data.Dealer._id) ? userDetails._id : dealersTable.data.Dealer._id;
                 // whosTurn.textContent = (turn === mySign) ? 'Your turn' : 'Your opponent\'s turn';
 
                 // Reset scores when a round is over and somebody has won the round

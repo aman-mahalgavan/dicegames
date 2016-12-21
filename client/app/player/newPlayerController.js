@@ -44,7 +44,6 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
     var vid_thumb = document.getElementById("vid-thumb");
 
     // Live Video Stream
-    
     function ReceiveVideo(userDetails, tableDetails){
         // Muaz Khan     - https://github.com/muaz-khan
         // MIT License   - https://www.webrtc-experiment.com/licence/
@@ -212,7 +211,6 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
         return hexColor.toUpperCase();
     };
-
 
     function initiateChat(userDetails, tableDetails) {
         var chatBadgeColor = getRandomColor();
