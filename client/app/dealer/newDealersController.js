@@ -427,6 +427,8 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 }
             });
         })();
+
+        
         $scope.publishResultCounter = 0;
         function subscribeToPublicChannel(){
             console.log('channel to publish global result => ', dealersTable.data.Dealer._id);
