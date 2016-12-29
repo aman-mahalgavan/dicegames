@@ -608,14 +608,14 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             // Keep every joining player in an array. 
             // This will be the array of players who are connected to the dealer but not subscribed to for playing the game.
             // data.player['playing'] = false;
-            alert(JSON.stringify(data));
+            // alert(JSON.stringify(data));
             $scope.playersInGame.push(data.player);
             
             // if a round has not started yet, put the players in another array which 
             // we will use to keep track of how many players are playing in a round.
             // And subscribe the dealer to them.
             if(!$scope.roundStarted){
-                alert("Round not started");
+                // alert("Round not started");
                 // data.player['playing'] = true;
                 // $scope.playersInRound = [];
                 
@@ -627,12 +627,12 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 //     $scope.playersInRound.push(item);
                 // })
                 $scope.playersInRound.forEach(function(item){
-                    alert('Subscribed to ' + item._id);
+                    // alert('Subscribed to ' + item._id);
                     subscribeToPlayersChannel(item._id);
                 });
             };
             if($scope.roundStarted){
-                alert("Round Started");
+                // alert("Round Started");
                 // alert('roundInProgress (collctPlayers Function)', JSON.stringify($scope.playersInRound));
                 console.log("$scope.playersInRound when round is started", $scope.playersInRound);
                 publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: 0, timestamp: null, timeString: null});                            
@@ -660,7 +660,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             }
             // alert("$scope.playersInRound.length", JSON.stringify($scope.playersInRound));
             if($scope.playersInRound.length > 1){ // if more than 1 player have joined the game
-                alert("More than 1 players");
+                // alert("More than 1 players");
                 pubnub.time(function(time){
 
                     // Convert pubnub timeToken to IST --> 

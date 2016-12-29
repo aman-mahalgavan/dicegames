@@ -417,7 +417,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     flag: 'publishing players channel ID'
                 },
                 callback: function(m) {
-                    alert("Published Own ID to channel => ", JSON.stringify(dealersTable.data.Dealer._id));
+                    // alert("Published Own ID to channel => ", JSON.stringify(dealersTable.data.Dealer._id));
                     // console.log("Publish Player");
                     // console.log(m);
                 }
