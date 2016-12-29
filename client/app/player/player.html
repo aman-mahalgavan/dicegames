@@ -50,38 +50,6 @@
     <!-- Video Panel -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-
-
-    <!-- Experiment -->
-    <!-- <section class="experiment"> -->
-           <!--  <section>
-                <span>
-                    Private ??
-                    <a href="" target="_blank" title="Open this link in new tab. Then your room will be private!">
-                        <code>
-                            <strong id="unique-token">#123456789</strong>
-                        </code>
-                    </a>
-                </span>
-
-                <input type="text" id="broadcast-name">
-                <button id="setup-new-broadcast" class="setup">Setup New Broadcast</button>
-            </section> -->
-
-            <!-- list of all available broadcasting rooms -->
-            <!-- <table style="width: 100%;" id="rooms-list"></table> -->
-
-
-            <!-- local/remote videos container -->
-            <!-- <div id="videos-container"></div> -->
-        <!-- </section> -->
-    <!-- End -->
-
-
-
-
-
-
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="overflow: hidden;">
         <div class="col-md-12" style="position:relative;padding:0;">
             <div class="col-md-8">
@@ -216,7 +184,7 @@
                     <!--  ng-disabled="!betOptions" -->
                     <button id="placeBet" type="button" class="btn btn-danger" ng-click="placeBet(betAmount, betOptions);" style="width:100%;">Place Bet</button>
                 </div>
-                <a type="button" data-dismiss="modal" style="font-size:14px;cursor:pointer;">Skip Round</a>
+                <a id="skipRound" type="button" data-dismiss="modal" style="font-size:14px;cursor:pointer;">Skip Round</a>
             </div>
         </div>
     </div>

@@ -175,7 +175,7 @@ var CONTROLLER = window.CONTROLLER = function(phone){
 		pubnub.here_now({
 			channel : number,
 			callback : function(m){
-				console.log(m);  // TODO Comment out
+				// console.log(m);  // TODO Comment out
 				cb(m.occupancy != 0);
 			}
 		});
@@ -226,7 +226,9 @@ var CONTROLLER = window.CONTROLLER = function(phone){
 		pubnub.publish({ 
 			channel: ch,
 			message: msg,
-			callback : function(m){console.log(m)}
+			callback : function(m){
+				// console.log(m)
+			}
 		});
 	}
 	
@@ -297,7 +299,7 @@ function get_xirsys_servers() {
             secure: 1,
         },
         success: function(res) {
-	        console.log(res);
+	        // console.log(res);
             res = JSON.parse(res);
             if (!res.e) servers = res.d.iceServers;
         },

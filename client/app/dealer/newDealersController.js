@@ -401,7 +401,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         };
 
         /* ============== Publish & subscribe using Pubnub ============== */
-
+        var subscriptionCounter = 0;
         // Subscribe to a public channel where players will publish their ID's only
         (function(){
             // console.log('channel to publish global result => ', dealersTable.data.Dealer._id);
@@ -413,8 +413,11 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                     // console.log(m);
                 },
                 callback: function(m){
+                    subscriptionCounter += 1;
                     console.log("Players will publish their ID's here Or publish Results- callback");
                     console.log(m);
+
+                    console.log("subscriptionCounter =>> " , subscriptionCounter);
                     if(m.flag == 'playerResult'){
                         // alert(m);
                     }else{
@@ -428,7 +431,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             });
         })();
 
-        
+
         $scope.publishResultCounter = 0;
         function subscribeToPublicChannel(){
             console.log('channel to publish global result => ', dealersTable.data.Dealer._id);
@@ -605,12 +608,14 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             // Keep every joining player in an array. 
             // This will be the array of players who are connected to the dealer but not subscribed to for playing the game.
             // data.player['playing'] = false;
+            alert(JSON.stringify(data));
             $scope.playersInGame.push(data.player);
             
             // if a round has not started yet, put the players in another array which 
             // we will use to keep track of how many players are playing in a round.
             // And subscribe the dealer to them.
             if(!$scope.roundStarted){
+                alert("Round not started");
                 // data.player['playing'] = true;
                 // $scope.playersInRound = [];
                 
@@ -622,17 +627,19 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
                 //     $scope.playersInRound.push(item);
                 // })
                 $scope.playersInRound.forEach(function(item){
-                    // alert('Subscribed to ' + item._id);
+                    alert('Subscribed to ' + item._id);
                     subscribeToPlayersChannel(item._id);
                 });
             };
-             if($scope.roundStarted){
+            if($scope.roundStarted){
+                alert("Round Started");
                 // alert('roundInProgress (collctPlayers Function)', JSON.stringify($scope.playersInRound));
                 console.log("$scope.playersInRound when round is started", $scope.playersInRound);
                 publishToPlayer(data.player._id, {flag: 'roundInProgress', duration: 0, timestamp: null, timeString: null});                            
             };
             // Start the game when the 1st player joins the dealer and start the wait time for both the dealer and the player.
-            if($scope.playersInRound.length == 1 && !$scope.roundStarted){ // if a single player has joined the game
+            if($scope.playersInRound.length == 1){ // if a single player has joined the game
+                alert("1 player");
                 pubnub.time(function(time){
                     // console.log("TIME PUBNUB");
                     // console.log(time);
@@ -653,6 +660,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             }
             // alert("$scope.playersInRound.length", JSON.stringify($scope.playersInRound));
             if($scope.playersInRound.length > 1){ // if more than 1 player have joined the game
+                alert("More than 1 players");
                 pubnub.time(function(time){
 
                     // Convert pubnub timeToken to IST --> 

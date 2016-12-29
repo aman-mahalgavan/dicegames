@@ -380,32 +380,49 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
         /* ============== Publish & subscribe using Pubnub ============== */
 
         // Ask player is they want to start the game or not
-        setTimeout(function() {
+        // setTimeout(function() {
 
-            swal({
-               title: "Dicegames will begin in a while.",
-               text: "You will be able to bet once the game starts.",
-               type: "warning",
-               showCancelButton: false,
-               confirmButtonColor: "#DD6B55",
-               confirmButtonText: "Yes, Start the game!",
-               closeOnConfirm: true}, 
-            function(){ 
-                // Player will publish his player ID to the dealers public channel
-                pubnub.publish({
-                    channel: dealersTable.data.Dealer._id,
-                    message: {
-                        player: JSON.stringify(userDetails),
-                        flag: 'publishing players channel ID'
-                    },
-                    callback: function(m) {
-                        // console.log("Publish Player");
-                        // console.log(m);
-                    }
-                });
+        //     swal({
+        //        title: "Dicegames will begin in a while.",
+        //        text: "You will be able to bet once the game starts.",
+        //        type: "warning",
+        //        showCancelButton: false,
+        //        confirmButtonColor: "#DD6B55",
+        //        confirmButtonText: "Yes, Start the game!",
+        //        closeOnConfirm: true}, 
+        //     function(){ 
+        //         // Player will publish his player ID to the dealers public channel
+        //         pubnub.publish({
+        //             channel: dealersTable.data.Dealer._id,
+        //             message: {
+        //                 player: JSON.stringify(userDetails),
+        //                 flag: 'publishing players channel ID'
+        //             },
+        //             callback: function(m) {
+        //                 // console.log("Publish Player");
+        //                 // console.log(m);
+        //             }
+        //         });
+        //     });
+
+        // }, 2000);
+
+
+        // Player will publish his player ID to the dealers public channel
+        // (function(){
+            pubnub.publish({
+                channel: dealersTable.data.Dealer._id,
+                message: {
+                    player: JSON.stringify(userDetails),
+                    flag: 'publishing players channel ID'
+                },
+                callback: function(m) {
+                    alert("Published Own ID to channel => ", JSON.stringify(dealersTable.data.Dealer._id));
+                    // console.log("Publish Player");
+                    // console.log(m);
+                }
             });
-
-        }, 2000);
+        // })()
 
         // Subscribe to Dealer's public channel to get dealer's moves
         pubnub.subscribe({
@@ -419,6 +436,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 document.getElementById('you').textContent = mySign;
             },
             callback: function(m) {
+
                 $scope.score.Dealer['name'] = m.playerName;
                 $scope.score.Dealer['id'] = m.player;
                 $scope.score.Dealer['value'] = m.diceValue;
@@ -523,6 +541,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
             },
             callback: function(m) {
+                console.log("Player Subscribed to OWN Channel => ", m)
                 if(m.data){
                     // console.log("Data from Dealer on Player's Private channel - Callback");
                     // console.log(m);
@@ -608,7 +627,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     document.getElementById('bet').removeAttribute('disabled');
                     document.getElementById('decreaseBet').removeAttribute('disabled');
                     document.getElementById('increaseBet').removeAttribute('disabled');
-
+                    $('#bet').trigger('click');
                     // Clear Dealers Dice Images as the new round starts
                     dealersDiceContainer.innerHTML = "";
 
@@ -651,6 +670,9 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
             }
             return {
                 startTimer: function (duration, flag) {
+                    if($('#skipRound').is(":visible")){
+                        $("#skipRound").trigger('click');
+                    };
                     $scope.resultingDice = [];
                     $('#diceResults').html('');
                     startNewGame();
