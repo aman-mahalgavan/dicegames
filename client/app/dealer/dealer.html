@@ -7,12 +7,12 @@
     <!-- Text Chat Panel -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" >
-       	<h2 id="chatHeading">Chat</h2>
+       	<!-- <h2 id="chatHeading">Chat</h2> -->
     	<div id="chatWindow" style="height:400px;position:relative;overflow:none;">
             
-            <div class="welcomeChatMsg">
+            <!-- <div class="welcomeChatMsg">
                 <p>Welcome to Dice Games Chat.</p>
-            </div>
+            </div> -->
             
             <div id="chatContainer" style="height: 320px;overflow-y: auto;" ng-scrollbars ng-scrollbars-config="scrollbarConfig">
                 <div id="box" style="display: inherit;padding:0 0 10px 0;max-height: 320px;width: 100%;" ></div>    
@@ -27,64 +27,17 @@
     
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- Players List -->
+    <!-- Player's Results -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
         <h2 id="playerListHeading">Results</h2>
         <div class="playersList" id="playersResults" style="color:#fff;">
-            <!-- <ul>
-                <li style="width:100%;" ng-repeat="playerData in playersResults">
-                    {{playersResults}}
-                    <span class="playersImage" style="width:20%;display:inline-block;">
-                        <img style="width:50px;height:50px;" src="http://placekitten.com/g/200/300" alt="">
-                    </span>
-                    <span class="listContainer" style="width: 78%;display:inline-block;">
-                        <span class="playersName" style="display:block;">
-                            
-                            {{playerData.player.name}}
-                            
-                        </span>
-                        <span class="roundResult" style="display:block;">
-                            <span ng-repeat="dice in playerData.dice">
-                                {{dice}}
-                            </span>
-                                
-                        </span>
-                    </span>
-                </li>
-            </ul> -->
         </div>
     </div>
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- Video Panel -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-
-    <!-- Experiment -->
-    <!-- <section class="experiment"> -->
-            <!-- <section>
-                <span>
-                    Private ??
-                    <a href="" target="_blank" title="Open this link in new tab. Then your room will be private!">
-                        <code>
-                            <strong id="unique-token">#123456789</strong>
-                        </code>
-                    </a>
-                </span>
-
-                <input type="text" id="broadcast-name">
-                <button id="setup-new-broadcast" class="setup">Setup New Broadcast</button>
-            </section> -->
-
-            <!-- list of all available broadcasting rooms -->
-            <!-- <table style="width: 100%;" id="rooms-list"></table> -->
-
-
-            <!-- local/remote videos container -->
-            <!-- <div id="videos-container"></div> -->
-        <!-- </section> -->
-    <!-- End -->
-
 
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4" style="overflow: hidden;">
         <div id="videos-container"></div>
@@ -139,56 +92,19 @@
 
 <div class="container textCenter textBold">
 	<div class="col-md-4">
-		<!-- <h4>YOUR DICE HAND</h4> -->
-        <!-- <button class="btn btn-default col-md-3" id="rollDice" ng-click="rollDice()">Roll Dice</button> -->
         <div id="diceResults" class="col-md-9">
-            
         </div>
 
         <div class="totalDiceVal" ng-if="DiceTotalValue" style="text-align:left;">Your Score- {{DiceTotalValue}}</div>
-		<!-- <div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
-		<div class="col-md-3"><img src="common/images/diceone.png" alt=""></div>
-		<div class="col-md-3"><img src="common/images/dicetwo.png" alt=""></div>
-		<div class="col-md-3"><img src="common/images/dicefour.png" alt=""></div> -->
 	</div>
-	<!-- <div class="col-md-4">
-		<h4>YOUR CHOICE</h4>
-		<div >
-			<button class="btn btn-default" disabled>FOLD</button>
-			<button class="btn btn-default playBetBtn" disabled>PLAY $25</button>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<h4>OUTCOME</h4>
-		<span class="lostColor">
-			LOST $30
-		</span>
-	</div> -->
 </div>
 
 <div id="sampleGame">
-    <img class="dice" data-diceValue = "1" src="common/images/diceone.png" alt="">
-    <img class="dice" data-diceValue = "2" src="common/images/dicetwo.png" alt="">
-    <img class="dice" data-diceValue = "4" src="common/images/dicefour.png" alt="">
-    
-    <!-- <button class="btn btn-default" id="rollDice" ng-click="rollDice()">Roll Dice</button>
-    <div id="diceResults">
-        
-    </div> -->
-
-    <!-- <li>In the new browser tab or window, go to:  -->
-        <span class="query"><span id="gameIdQuery"></span></span>
-    <!-- </li> -->
+    <span class="query">
+        <span id="gameIdQuery"></span>
+    </span>
     
     <section class="game">
-      <div class="col">
-        &nbsp;
-      </div>
-
-      <div class="col">
-        <!-- <div id="tictactoe" class="disabled"></div> -->
-      </div>
-
       <div class="col">
         <!-- Game ID:  -->
         <strong id="gameId"></strong>
@@ -196,7 +112,6 @@
         <br><span id="time"></span>
         <span id="whosTurn"></span>
       </div>
-
     </section>    
 
 </div>

@@ -114,6 +114,7 @@ exports.addCredit = function(req, res, next){
 exports.updateAccountBalance = function(req, res, next){
   var userId = req.user._id;
   var betAmount = req.body.betAmount;
+  var win = req.body.win;  
   User.findOne({
     _id: userId
   }, '-salt -hashedPassword', function(err, user) { // don't ever give out the password or salt
@@ -124,7 +125,11 @@ exports.updateAccountBalance = function(req, res, next){
       return res.status(401).send('Unauthorized');
     }
     else{
-      user.accountBalance = user.accountBalance - betAmount;
+      if(win){
+        user.accountBalance = user.accountBalance + betAmount;
+      }else{
+        user.accountBalance = user.accountBalance - betAmount;
+      }
       user.save().then(function(updatedUser){
         res.json(updatedUser);
       });

@@ -31,8 +31,19 @@ angular.module('dicegamesProjectApp')
     
     $scope.liveTables = [];
 
+    // Delete interval when the user navigates to another page
+    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        console.log("State Change");
+        if (fromState.name == 'main') {
+          if($scope.fetchTables){
+            clearInterval($scope.fetchTables);
+          }
+        };
+    });
+
+
     // Fetch List of Tables
-    setInterval(function(){
+    $scope.fetchTables = setInterval(function(){
       $http.get('/api/tables/listPublicTables').success(function(response){
         /*if(response.data.length > 0){
           response.data.forEach(function(item){
@@ -46,7 +57,7 @@ angular.module('dicegamesProjectApp')
         console.log("Error Fetching List of Dealer's Tables");
         console.log(err);
       }); 
-    }, 3000);
+    }, 5000);
     
 
     function TrimString(x) {

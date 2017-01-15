@@ -6,12 +6,12 @@
     <!-- Text Chat Panel -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
-        <h2 id="chatHeading">Chat</h2>
+        <!-- <h2 id="chatHeading">Chat</h2> -->
         <div id="chatWindow" style="height:400px;position:relative;overflow:none;">
-            <div class="welcomeChatMsg">
+            <!-- <div class="welcomeChatMsg">
                 <p>Welcome to Dice Games Chat.</p>
-            </div>
-            <!-- <div id="box" style="width:100%;text-align:left;height:400px;position:relative;overflow:none;" ng-scrollbars ng-scrollbars-config="scrollbarConfig"></div> -->
+            </div> -->
+            
             <div id="chatContainer" style="height: 320px;overflow-y: auto;" ng-scrollbars ng-scrollbars-config="scrollbarConfig">
                 <div id="box" style="display: inherit;padding:0 0 10px 0;max-height: 320px;width: 100%;"></div>
             </div>
@@ -20,30 +20,12 @@
         </div>
     </div>
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- Players List -->
+    <!-- Player's Results -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
         <h2 id="playerListHeading">Results</h2>
         <div class="playersList" id="playersResults" style="color:#fff;">
-            <!-- <ul>
-                <li ng-repeat="player in players" style="width:100%;">
-                    <span class="playersImage" style="width:20%;display:inline-block;">
-                        <img style="width:50px;height:50px;" src="http://placekitten.com/g/200/300" alt="">
-                    </span>
-                    <span class="listContainer" style="width: 78%;display:inline-block;">
-                        <span class="playersName" style="display:block;">
-                            {{player}}
-                        </span>
-                    <span class="roundResult" style="display:block;">
-                            <img style="width:25px;height:25px;" src="common/images/dicefour.png" alt="">
-                            <img style="width:25px;height:25px;" src="common/images/diceone.png" alt="">
-                            <img style="width:25px;height:25px;" src="common/images/dicetwo.png" alt="">
-                            <img style="width:25px;height:25px;" src="common/images/diceone.png" alt="">
-                            <!-- <img style="width:25px;height:25px;" src="http://placekitten.com/g/200/300" alt=""> 
-                        </span>
-                    </span>
-                </li>
-            </ul> -->
+            
         </div>
     </div>
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -122,6 +104,7 @@
         </div> -->
         <div class="col-md-9" style="padding:0;">
             <button id="bet" class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="width:100%;">Bet</button>
+            <div id="CreditRemaining">Credit Remaining: {{playerCredit}}</div>
         </div>
         <!-- <div class="col-md-3" style="padding:0;">
             <button class="btn btn-danger" ng-click="startNewGame()" style="width:100%;">Fold</button>
@@ -215,24 +198,13 @@
 </div> -->
 <!-- End -->
 <div id="sampleGame">
-   <!--  <img class="dice" data-diceValue="1" src="common/images/diceone.png" alt="">
-    <img class="dice" data-diceValue="2" src="common/images/dicetwo.png" alt="">
-    <img class="dice" data-diceValue="4" src="common/images/dicefour.png" alt=""> -->
-    <!-- <button class="btn btn-default" id="rollDice" ng-click="rollDice()">Roll Dice</button> -->
+  
     <div id="diceResults">
     </div>
-    <!-- <li>In the new browser tab or window, go to:  -->
     <span class="query"><span id="gameIdQuery"></span></span>
-    <!-- </li> -->
     <section class="game">
-        <!-- <div class="col"> -->
-        <!-- &nbsp; -->
-        <!-- </div> -->
-        <!-- <div class="col"> -->
-        <!-- <div id="tictactoe" class="disabled"></div> -->
-        <!-- </div> -->
+
         <div class="col">
-            <!-- Game ID:  -->
             <strong id="gameId"></strong>
             <br> You: <span id="you"></span>
             <br> <span id="time"></span>
