@@ -28,6 +28,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             
             $scope.dealerTableDetails = dealersTable;
             // startDealersVideoStream(userDetails, dealersTable);
+            $scope.tableName = dealersTable.data.Dealer.name;
             publishIDToServer(userDetails, dealersTable)
             broadcastVideo(userDetails, dealersTable);
             initiateChat(userDetails, dealersTable);
@@ -75,11 +76,57 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             if (confirmed) {
                 connection.close($scope.userDetails._id);
                 deleteTable($scope.dealerTableDetails.data._id);
+                if($scope.roundInterval && $scope.roundInterval != 0){
+                    var dealersDice = [];
+                    for (var i = 0; i < 3; i++) {
+                        var dice = diceArray[Math.floor(Math.random() * diceArray.length)]
+                        dealersDice.push(dice);
+                    };
+
+                    // var arr = document.getElementById('diceResults').children;
+                    var diceSum = 0;
+                    for(var j=0;j<dealersDice.length;j++){
+                        var x = dealersDice[j];
+                      diceSum += Number(x.substring(21, 22));
+                    }
+
+                    $scope.alertUsers($scope.dealerTableDetails.data._id, 'lastRound', dealersDice, $scope.dealerTableDetails.data.Dealer.name, $scope.dealerTableDetails.data.Dealer._id, diceSum );
+                }else if($scope.waitTimer && $scope.waitTimer != 0 && !$scope.roundTimer){
+                    $scope.alertUsers($scope.dealerTableDetails.data._id, 'dealerLeft', null);
+                }
             } else {
                 return;
             };
         };
     });
+
+    $scope.alertUsers = function(dealersTable, flag, dealersDice, dealerName, dealerId, diceValue){
+        var message = {
+            flag: flag
+        };
+        // diceValue, userDetails.name, chosendices
+        if(flag == 'lastRound'){
+            message['dealersDice'] = dealersDice;
+            message['player']= dealerId,
+            message['playerName']= dealerName,
+            message['position']= 'position',
+            message['diceValue']= diceValue,
+            message['channel']= 'gameChannel',
+            message['dealersDice']= dealersDice
+        };
+        pubnub.publish({
+            channel: dealersTable,
+            message: message,
+            callback: function(m) {
+                console.log("Dealer Left. All Players Alerted.");
+                // console.log(m);
+                // if(m.diceValue > 0){
+                //     checkGameStatus(m.player, m.diceValue);    
+                // }
+                // checkGameStatus(dealer, diceValue);   
+            }
+        });
+    };
 
     function deleteTable(tableID){
         if(!tableID){
@@ -294,6 +341,21 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         'Player': {}
     };
 
+    // dice images
+    var diceOne = '<img data-diceValue="1" src="../../assets/images/diceone.png" style="margin-right:10px;">';
+    var diceTwo = '<img data-diceValue="2" src="../../assets/images/dicetwo.png" style="margin-right:10px;">';
+    var diceThree = '<img data-diceValue="3" src="../../assets/images/diceThree.png" style="margin-right:10px;">';
+    var diceFour = '<img data-diceValue="4" src="../../assets/images/dicefour.png" style="margin-right:10px;">';
+    var diceFive = '<img data-diceValue="5" src="../../assets/images/diceFive.png" style="margin-right:10px;">';
+    var diceSix = '<img data-diceValue="6" src="../../assets/images/diceSix.png" style="margin-right:10px;">';
+
+    var diceArray = [];
+    diceArray.push(diceOne);
+    diceArray.push(diceTwo);
+    diceArray.push(diceThree);
+    diceArray.push(diceFour);
+    diceArray.push(diceFive);
+    diceArray.push(diceSix);
 
     function initiateGame(userDetails, dealersTable){
 
@@ -305,21 +367,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
         // var whosTurn = document.getElementById('whosTurn');
         var display = document.querySelector('#time');
 
-        // dice images
-        var diceOne = '<img data-diceValue="1" src="../../assets/images/diceone.png" style="margin-right:10px;">';
-        var diceTwo = '<img data-diceValue="2" src="../../assets/images/dicetwo.png" style="margin-right:10px;">';
-        var diceThree = '<img data-diceValue="3" src="../../assets/images/diceThree.png" style="margin-right:10px;">';
-        var diceFour = '<img data-diceValue="4" src="../../assets/images/dicefour.png" style="margin-right:10px;">';
-        var diceFive = '<img data-diceValue="5" src="../../assets/images/diceFive.png" style="margin-right:10px;">';
-        var diceSix = '<img data-diceValue="6" src="../../assets/images/diceSix.png" style="margin-right:10px;">';
-
-        var diceArray = [];
-        diceArray.push(diceOne);
-        diceArray.push(diceTwo);
-        diceArray.push(diceThree);
-        diceArray.push(diceFour);
-        diceArray.push(diceFive);
-        diceArray.push(diceSix);
+        
 
         // Set up Game Requirements
         var gameid = dealersTable.data._id;
@@ -488,6 +536,7 @@ angular.module('dicegamesProjectApp').controller('dealerController', function($s
             });
         };
 
+        
         // Publish Dealer's data on a public channel which the players will subscribe to.
         function publishPosition(dealer, position, status, diceValue, dealerName, chosenDice) {
 

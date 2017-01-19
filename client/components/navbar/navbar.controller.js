@@ -25,6 +25,7 @@ angular.module('dicegamesProjectApp')
       $http.post('/api/users/addCredit', {creditAmount: creditAmount}).success(function(response){
           console.log("Credit Added");
           console.log(response);
+          $rootScope.playerCredit = response.accountBalance;
           swal('Credit Added Successfully', "success");
           $('#addCreditModal').modal('hide');
       }).error(function(error){

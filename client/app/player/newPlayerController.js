@@ -280,6 +280,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
 
     var waitIntervalId, roundIntervalId;
 
+    $scope.lastRound = false;
+
     function initiateGame(userDetails, dealersTable){
 
     	// DOM Elements
@@ -447,8 +449,8 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     m.dealersDice.forEach(function(item){
                         // dealersDiceContainer.innerHTML = m.dealersDice;
                         dealersDiceContainer.innerHTML += item;
-                    })
-                }
+                    });
+                };
             	checkGameStatus(m.player, m.diceValue);
                 if(m.flag == 'playerResult'){
                     // roundIntervalId = 0;
@@ -463,9 +465,19 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     document.getElementById('playersResults').innerHTML += m.data + '</div>';
                 };
                 if(m.flag == 'playersBet'){
-                    document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">' + m.player.name + ' has bet $';
+                    document.getElementById('playersResults').innerHTML += '<div style="margin-bottom:10px;">' + m.player.name + ' has bet $' + m.data + '</div>';
     
-                    document.getElementById('playersResults').innerHTML += m.data + '</div>';
+                    // document.getElementById('playersResults').innerHTML += ;
+                };
+
+                if(m.flag == 'dealerLeft'){
+                    alert("Dealer Left the table. You will be redirected to the dashboard.");
+                    $state.go('main');
+                };
+
+                if(m.flag == 'lastRound'){
+                    alert("Dealer Left the table. This is the last round. You will be redirected to the dashboard after this round.");
+                    $scope.lastRound = true;
                 };
             },
         });
@@ -483,6 +495,7 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                 callback: function(m) {
                     // console.log("Published On " + dealersTable.data._id);
                     console.log("Published Message " + result);
+
                     // $scope.score.Dealer['name'] = m.playerName;
                     // $scope.score.Dealer['id'] = m.player;
                     // $scope.score.Dealer['value'] = m.diceValue;
@@ -533,6 +546,17 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                     // $scope.score[m.player] = m.diceValue;
                     console.log("Publish Player");
                     console.log(m);
+
+                    if($scope.lastRound == true){
+
+                        if(waitIntervalId){
+                            clearInterval(waitIntervalId);
+                        };
+                        if(roundIntervalId){
+                            clearInterval(roundIntervalId);
+                        };
+                        $state.go('main');
+                    };
                     // checkGameStatus(userDetails._id, diceValue);
                 }
             });
@@ -603,6 +627,23 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         tens = 0;
                     }
                 }
+                if($scope.lastRound == true){
+                    if($scope.resultingDice.length == 3){
+                        $scope.resultingDice.forEach(function(dice){
+                            resultContainer.innerHTML += dice;
+                        });
+                    };
+                    if(waitIntervalId){
+                        clearInterval(waitIntervalId);
+                    };
+                    if(roundIntervalId){
+                        clearInterval(roundIntervalId);
+                    };
+                    setTimeout(function(){
+                        $state.go('main');
+                    }, 5000);
+                };
+
                 if(seconds == duration){
                     clearInterval(roundIntervalId);
                     display.textContent = 'Round Time: ' + seconds + ' Seconds Remaining';
@@ -620,6 +661,15 @@ angular.module('dicegamesProjectApp').controller('playerController', function($s
                         $scope.score.Player['value'] = 0;
                         resultContainer.innerHTML += "You Folded. Please Wait for the Next Round to start."
                         publishFoldMessage(userDetails._id, userDetails);
+                        if($scope.lastRound == true){
+                            if(waitIntervalId){
+                                clearInterval(waitIntervalId);
+                            };
+                            if(roundIntervalId){
+                                clearInterval(roundIntervalId);
+                            };
+                            $state.go('main');
+                        };
                     };
 
                 }else{
